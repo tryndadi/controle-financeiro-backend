@@ -1,0 +1,404 @@
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #0f1412;
+    color: #e5e5e5;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1300px;
+    margin: auto;
+}
+
+/* HEADER */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.header h1 {
+    color: #2ecc71;
+}
+
+/* GRID PRINCIPAL */
+.top-grid,
+.middle-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+/* CARDS */
+.card {
+    background: #1a1f1c;
+    padding: 20px;
+    border-radius: 14px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+
+.card h3 {
+    margin-bottom: 15px;
+    color: #2ecc71;
+}
+
+/* SALDO */
+.balance-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    background: linear-gradient(135deg, #14532d, #166534);
+}
+
+.balance-card p {
+    opacity: 0.8;
+}
+
+.balance-card h2 {
+    font-size: 20px;
+    margin-top: 5px;
+}
+
+#goal-input {
+    width: 120px;
+}
+
+/* INPUTS */
+input,
+select {
+    background: #0f1412;
+    border: 1px solid #2ecc71;
+    color: #e5e5e5;
+    padding: 6px 8px;
+    border-radius: 8px;
+    width: 100%;
+    font-size: 14px;
+}
+
+input:focus,
+select:focus {
+    outline: none;
+    border-color: #27ae60;
+}
+
+/* BOTÕES */
+button {
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.2s ease;
+    font-size: 14px;
+}
+
+.btn-primary {
+    background: #2ecc71;
+    color: #0f1412;
+}
+
+.btn-primary:hover {
+    background: #27ae60;
+}
+
+.btn-secondary {
+    background: #14532d;
+    color: #e5e5e5;
+}
+
+.btn-secondary:hover {
+    background: #166534;
+}
+
+/* TABELAS */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+thead {
+    background: #14532d;
+}
+
+th,
+td {
+    padding: 10px;
+    text-align: left;
+}
+
+tr:nth-child(even) {
+    background: #16201b;
+}
+
+tr:hover {
+    background: #1f2b24;
+}
+
+/* PROGRESS BAR */
+.progress-bar {
+    width: 100%;
+    height: 18px;
+    background: #1f2b24;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+#progress-fill {
+    height: 100%;
+    width: 0%;
+    transition: width 0.8s ease, background 0.6s ease;
+}
+
+/* CHART */
+.chart-container {
+    width: 100%;
+    height: 260px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#expenseChart {
+    max-width: 100%;
+}
+
+/* MODAL OVERLAY */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+/* MODAL BOX */
+.modal {
+    width: 95%;
+    max-width: 480px;
+    background: rgba(17, 24, 39, 0.8);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 30px;
+    animation: fadeIn 0.3s ease;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: #e5e5e5;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.close-btn:hover {
+    transform: rotate(90deg);
+}
+
+/* FORM */
+/*Teste Visual
+
+#transaction-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+*/
+
+#transaction-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+#origin-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* MODAL LIMITE */
+.limit-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1100;
+}
+
+.limit-modal.active {
+    display: flex;
+}
+
+.limit-modal-content {
+    background: #1f2937;
+    padding: 25px;
+    border-radius: 16px;
+    width: 320px;
+    animation: fadeIn 0.25s ease;
+}
+
+/* RESPONSIVO */
+@media (max-width: 1000px) {
+
+    .top-grid,
+    .middle-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* PULSE QUANDO META ATINGIDA */
+@keyframes goalPulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+    }
+
+    70% {
+        box-shadow: 0 0 0 15px rgba(16, 185, 129, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+    }
+}
+
+.goal-complete {
+    animation: goalPulse 1.2s ease-out;
+}
+
+.filters {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+    margin-bottom: 25px;
+    align-items: end;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.filter-group label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    opacity: 0.7;
+}
+
+.filter-group select {
+    height: 40px;
+    padding: 0 12px;
+    border-radius: 8px;
+    border: 1px solid #1f3d2e;
+    background: #0f1f17;
+    color: white;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.filter-group select:hover {
+    border-color: #22c55e;
+}
+
+.filter-group select:focus {
+    outline: none;
+    border-color: #22c55e;
+    box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.chart-controls {
+    display: flex;
+    gap: 10px;
+}
+
+.chart-toggle-btn {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.limit-cell {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.limit-gear {
+    background: none;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+.limit-gear:hover {
+    opacity: 1;
+}
+
+.transaction-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+#transaction-description {
+    grid-column: span 2;
+}
+
+.transaction-grid button {
+    grid-column: span 2;
+    margin-top: 5px;
+}
