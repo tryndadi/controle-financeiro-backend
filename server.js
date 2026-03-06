@@ -21,7 +21,7 @@ app.get("/categorias/:tipo", async (req, res) => {
 });
 
 app.get("/", (req, res) => {
-    res.send("API rodando 🚀");
+    res.sendFile(__dirname + "/index.html");
 });
 
 app.get("/transacoes", async (req, res) => {
