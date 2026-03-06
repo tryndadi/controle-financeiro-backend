@@ -23,11 +23,13 @@ const originGroup = document.getElementById("origin-group");
 
 const categorySelect = document.getElementById("transaction-category");
 
+const API_URL = "https://controle-financeiro-backend-zeta.vercel.app";
+
 typeSelect.addEventListener("change", updateOriginField);
 
 async function loadTransactions() {
 
-    const response = await fetch("https://controle-financeiro-backend-zeta.vercel.app/transacoes");
+    const response = await fetch(`${API_URL}/transacoes`);
     const data = await response.json();
 
     transactions = data.map(t => ({
@@ -42,28 +44,9 @@ async function loadTransactions() {
     render();
 }
 
-async function loadCategories() {
-
-    const response = await fetch("https://controle-financeiro-backend-zeta.vercel.app/transacoes");
-    const categories = await response.json();
-
-    categorySelect.innerHTML = "";
-
-    categories.forEach(cat => {
-
-        const option = document.createElement("option");
-        option.value = cat.nome;
-        option.textContent = cat.nome;
-
-        categorySelect.appendChild(option);
-
-    });
-
-}
-
 async function loadCategoriesByType(tipo) {
 
-    const response = await fetch(`https://controle-financeiro-backend-zeta.vercel.app/transacoes/${tipo}`);
+    const response = await fetch(`${API_URL}/categorias/${tipo}`);
     const categories = await response.json();
 
     categorySelect.innerHTML = "";
@@ -145,10 +128,8 @@ function updateOriginField() {
 
         categorySelect.style.display = "block";
 
+        loadCategoriesByType("despesa");
     }
-
-    loadCategoriesByType(typeSelect.value);
-
 }
 
 document.getElementById("cancel-transaction").onclick = function () {
@@ -265,7 +246,7 @@ function renderTable() {
 
 async function deleteTransaction(id) {
 
-    await fetch(`https://controle-financeiro-backend-zeta.vercel.app/transacoes/${id}`, {
+    await fetch(`${API_URL}/transacoes/${id}`, {
         method: "DELETE"
     });
 
@@ -465,7 +446,7 @@ document.getElementById("transaction-form").onsubmit = async function (e) {
         data: document.getElementById("transaction-date").value
     };
 
-    await fetch("https://controle-financeiro-backend-zeta.vercel.app/transacoes", {
+    await fetch(`${API_URL}/transacoes`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -498,4 +479,4 @@ document.querySelectorAll(".filters select").forEach(select => {
 });
 
 loadTransactions();
-loadCategories();
+updateOriginField();
