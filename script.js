@@ -23,7 +23,7 @@ const originGroup = document.getElementById("origin-group");
 
 const categorySelect = document.getElementById("transaction-category");
 
-const API_URL = "https://controle-financeiro-backend-zeta.vercel.app";
+const API_URL = "";
 
 typeSelect.addEventListener("change", updateOriginField);
 
