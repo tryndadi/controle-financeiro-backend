@@ -8,14 +8,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Servir arquivos estáticos (HTML, CSS, JS)
-app.use(express.static(path.join(__dirname)));
-
-// =========================
-// ROTAS DA API
-// =========================
+app.use(express.static(__dirname));
 
 app.get("/categorias/:tipo", async (req, res) => {
+
     const { tipo } = req.params;
 
     const result = await pool.query(
@@ -27,14 +23,12 @@ app.get("/categorias/:tipo", async (req, res) => {
 });
 
 app.get("/transacoes", async (req, res) => {
-    const result = await pool.query(
-        "SELECT * FROM transacoes ORDER BY id DESC"
-    );
-
+    const result = await pool.query("SELECT * FROM transacoes ORDER BY id DESC");
     res.json(result.rows);
 });
 
 app.post("/transacoes", async (req, res) => {
+
     try {
 
         const { descricao, valor, tipo, origem, data } = req.body;
@@ -52,26 +46,20 @@ app.post("/transacoes", async (req, res) => {
         res.status(500).send("Erro ao salvar transação");
 
     }
+
 });
 
 app.delete("/transacoes/:id", async (req, res) => {
 
     const { id } = req.params;
 
-    await pool.query(
-        "DELETE FROM transacoes WHERE id=$1",
-        [id]
-    );
+    await pool.query("DELETE FROM transacoes WHERE id=$1", [id]);
 
     res.json({ message: "Deletado" });
 
 });
 
-// =========================
-// FRONTEND
-// =========================
-
-app.get("/*", (req, res) => {
+app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "index.html"));
 });
 
