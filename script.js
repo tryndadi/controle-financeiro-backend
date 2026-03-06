@@ -27,7 +27,7 @@ typeSelect.addEventListener("change", updateOriginField);
 
 async function loadTransactions() {
 
-    const response = await https://controle-financeiro-api.onrender.com/transacoes");
+    const response = await fetch("https://controle-financeiro-backend-zeta.vercel.app/transacoes");
     const data = await response.json();
 
     transactions = data.map(t => ({
@@ -44,7 +44,7 @@ async function loadTransactions() {
 
 async function loadCategories() {
 
-    const response = await fetch("http://localhost:3000/categorias");
+    const response = await fetch("https://controle-financeiro-backend-zeta.vercel.app/transacoes");
     const categories = await response.json();
 
     categorySelect.innerHTML = "";
@@ -63,7 +63,7 @@ async function loadCategories() {
 
 async function loadCategoriesByType(tipo) {
 
-    const response = await fetch(`http://localhost:3000/categorias/${tipo}`);
+    const response = await fetch(`https://controle-financeiro-backend-zeta.vercel.app/transacoes/${tipo}`);
     const categories = await response.json();
 
     categorySelect.innerHTML = "";
@@ -265,7 +265,7 @@ function renderTable() {
 
 async function deleteTransaction(id) {
 
-    await fetch(`http://localhost:3000/transacoes/${id}`, {
+    await fetch(`https://controle-financeiro-backend-zeta.vercel.app/transacoes/${id}`, {
         method: "DELETE"
     });
 
@@ -465,7 +465,7 @@ document.getElementById("transaction-form").onsubmit = async function (e) {
         data: document.getElementById("transaction-date").value
     };
 
-    await fetch("https://controle-financeiro-api.onrender.com/transacoes", {
+    await fetch("https://controle-financeiro-backend-zeta.vercel.app/transacoes", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
