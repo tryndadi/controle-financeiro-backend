@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const pool = require("./db");
+const pool = require("../db");
 const path = require("path");
 
 const app = express();
@@ -9,6 +9,10 @@ app.use(cors());
 app.use(express.json());
 
 app.use(express.static(path.join(__dirname, ".")));
+
+export default function handler(req, res) {
+    res.status(200).json({ status: "API funcionando" });
+}
 
 app.get("/categorias/:tipo", async (req, res) => {
 
