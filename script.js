@@ -27,7 +27,7 @@ typeSelect.addEventListener("change", updateOriginField);
 
 async function loadTransactions() {
 
-    const response = await fetch("http://localhost:3000/transacoes");
+    const response = await https://controle-financeiro-api.onrender.com/transacoes");
     const data = await response.json();
 
     transactions = data.map(t => ({
@@ -465,7 +465,7 @@ document.getElementById("transaction-form").onsubmit = async function (e) {
         data: document.getElementById("transaction-date").value
     };
 
-    await fetch("http://localhost:3000/transacoes", {
+    await fetch("https://controle-financeiro-api.onrender.com/transacoes", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
