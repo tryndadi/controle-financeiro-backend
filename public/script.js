@@ -23,7 +23,7 @@ const originGroup = document.getElementById("origin-group");
 
 const categorySelect = document.getElementById("transaction-category");
 
-const API_URL = "";
+const API_URL = "/api";
 
 typeSelect.addEventListener("change", updateOriginField);
 
