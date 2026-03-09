@@ -402,3 +402,90 @@ tr:hover {
     grid-column: span 2;
     margin-top: 5px;
 }
+
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+@media (max-width: 768px) {
+
+    body {
+        padding: 10px;
+    }
+
+    table {
+        min-width: 600px;
+    }
+
+}
+
+.transaction-card {
+
+    background: #1e1e1e;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+
+}
+
+.card-header {
+
+    display: flex;
+    justify-content: space-between;
+    font-size: 16px;
+
+}
+
+.card-body {
+
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: #aaa;
+
+}
+
+.transaction-card button {
+
+    border: none;
+    padding: 8px;
+    border-radius: 6px;
+    background: #e74c3c;
+    color: white;
+    cursor: pointer;
+
+}
+
+.card:hover,
+.transaction-card:hover {
+
+    transform: translateY(-3px);
+    transition: 0.2s ease;
+
+}
+
+#open-modal {
+
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+
+    width: 60px;
+    height: 60px;
+
+    border-radius: 50%;
+    font-size: 28px;
+
+    background: #2ecc71;
+    color: white;
+
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+
+}

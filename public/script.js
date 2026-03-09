@@ -207,6 +207,10 @@ function renderTable() {
 
     let filtered = [...transactions];
 
+    if (window.innerWidth < 768) {
+        renderMobileCards(filtered);
+        return;
+    }
     // FILTRO TIPO
     if (typeFilter !== "todos") {
         filtered = filtered.filter(t => t.type === typeFilter);
@@ -288,6 +292,39 @@ ${limit ? format(limit - total) : "Sem limite"}
 `;
         cardSummary.appendChild(row);
     });
+}
+
+function renderMobileCards(filtered) {
+
+    transactionsList.innerHTML = "";
+
+    filtered.forEach(t => {
+
+        const card = document.createElement("div");
+        card.className = "transaction-card";
+
+        card.innerHTML = `
+            <div class="card-header">
+                <strong>${t.description}</strong>
+                <span class="${t.type}">
+                    ${format(t.amount)}
+                </span>
+            </div>
+
+            <div class="card-body">
+                <span>${t.origin}</span>
+                <span>${formatDate(t.date)}</span>
+            </div>
+
+            <button onclick="deleteTransaction(${t.id})">
+                Excluir
+            </button>
+        `;
+
+        transactionsList.appendChild(card);
+
+    });
+
 }
 
 function openLimit(card) {
@@ -441,23 +478,45 @@ function renderChart() {
         data = [receita, despesa];
     }
 
-    if (chart) chart.destroy();
+    if (chart) {
 
-    chart = new Chart(ctx, {
-        type: "doughnut",
-        data: {
-            labels,
-            datasets: [{
-                data,
-                backgroundColor: ["#2ecc71", "#e74c3c", "#3498db", "#f1c40f", "#9b59b6"]
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { position: "bottom" } }
-        }
-    });
+        chart.data.labels = labels;
+        chart.data.datasets[0].data = data;
+        chart.update();
+
+    } else {
+
+        chart = new Chart(ctx, {
+            type: "doughnut",
+            data: {
+                labels,
+                datasets: [{
+                    data,
+                    backgroundColor: [
+                        "#2ecc71",
+                        "#e74c3c",
+                        "#3498db",
+                        "#f1c40f",
+                        "#9b59b6"
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                    duration: 700,
+                    easing: "easeOutQuart"
+                },
+                plugins: {
+                    legend: {
+                        position: "bottom"
+                    }
+                }
+            }
+        });
+
+    }
 }
 
 document.getElementById("transaction-form").onsubmit = async function (e) {

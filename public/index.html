@@ -115,20 +115,21 @@
                 </div>
 
             </div>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Data</th>
-                        <th>Tipo</th>
-                        <th>Descrição</th>
-                        <th>Origem</th>
-                        <th>Valor</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody id="transactions-list"></tbody>
-            </table>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Tipo</th>
+                            <th>Descrição</th>
+                            <th>Origem</th>
+                            <th>Valor</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactions-list"></tbody>
+                </table>
+            </div>
         </section>
 
     </div>
@@ -144,7 +145,7 @@
 
             <form id="transaction-form" class="transaction-grid">
 
-                <input type="date" id="transaction-date" required>
+                <input id="transaction-date" type="datetime-local" required>
 
                 <select id="transaction-type">
                     <option value="receita">Receita</option>
