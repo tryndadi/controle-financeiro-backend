@@ -173,10 +173,12 @@ tr:hover {
     justify-content: center;
     align-items: center;
     overflow: hidden;
+    position: relative;
 }
 
 canvas {
-    max-width: 100%;
+    width: 100% !important;
+    height: 100% !important;
 }
 
 #expenseChart {
@@ -424,7 +426,7 @@ canvas {
     }
 
     table {
-        min-width: 600px;
+        width: 100%;
     }
 
 }
@@ -438,7 +440,9 @@ canvas {
 
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
+
+    width: 100%;
 
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 
@@ -448,7 +452,13 @@ canvas {
 
     display: flex;
     justify-content: space-between;
-    font-size: 16px;
+    align-items: center;
+    gap: 10px;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    flex-wrap: wrap;
 
 }
 
@@ -456,19 +466,26 @@ canvas {
 
     display: flex;
     justify-content: space-between;
+    align-items: center;
+
     font-size: 13px;
     color: #aaa;
+
+    flex-wrap: wrap;
+    gap: 6px;
 
 }
 
 .transaction-card button {
 
     border: none;
-    padding: 8px;
+    padding: 8px 10px;
     border-radius: 6px;
     background: #e74c3c;
     color: white;
     cursor: pointer;
+
+    align-self: flex-start;
 
 }
 
@@ -502,4 +519,25 @@ canvas {
     .chart-container {
         height: 320px;
     }
+}
+
+@media (max-width: 768px) {
+
+    body {
+        padding: 12px;
+    }
+
+    .card {
+        padding: 16px;
+    }
+
+    .filters {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .chart-container {
+        height: 300px;
+    }
+
 }
