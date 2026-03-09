@@ -504,6 +504,10 @@ document.querySelectorAll(".filters select").forEach(select => {
     select.addEventListener("change", render);
 });
 
-await loadCardLimits();
-loadTransactions();
-updateOriginField();
+async function init() {
+    await loadCardLimits();
+    await loadTransactions();
+    updateOriginField();
+}
+
+init();
