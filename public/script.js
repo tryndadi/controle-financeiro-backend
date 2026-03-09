@@ -5,7 +5,6 @@ let chart;
 let selectedCard = null;
 let chartMode = "cartao"; // cartao ou relacao
 let chartPeriod = "tudo"; // mes, ano, tudo
-let saldoElemento;
 
 const transactionsList = document.getElementById("transactions-list");
 const cardSummary = document.getElementById("card-summary-list");
@@ -183,6 +182,11 @@ function render() {
 }
 
 function renderBalance() {
+
+    const saldoElemento = document.getElementById("saldo");
+
+    if (!saldoElemento) return;
+
     let total = 0;
 
     transactions.forEach(t => {
@@ -191,8 +195,6 @@ function renderBalance() {
     });
 
     saldoElemento.textContent = format(total);
-
-    // 🔴 saldo vermelho quando negativo
     saldoElemento.classList.toggle("negativo", total < 0);
 }
 
@@ -570,7 +572,6 @@ document.querySelectorAll(".filters select").forEach(select => {
 });
 
 async function init() {
-    saldoElemento = document.getElementById("saldo");
 
     await loadCardLimits();
     await loadTransactions();
