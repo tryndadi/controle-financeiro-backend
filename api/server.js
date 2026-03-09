@@ -60,5 +60,32 @@ app.delete("/api/transacoes/:id", async (req, res) => {
     res.json({ success: true });
 
 });
+// BUSCAR limites
+app.get("/api/limites", async (req, res) => {
+
+    const result = await pool.query(
+        "SELECT * FROM limites_cartao"
+    );
+
+    res.json(result.rows);
+
+});
+
+
+// SALVAR ou ATUALIZAR limite
+app.post("/api/limites", async (req, res) => {
+
+    const { cartao, limite } = req.body;
+
+    await pool.query(`
+        INSERT INTO limites_cartao (cartao, limite)
+        VALUES ($1,$2)
+        ON CONFLICT (cartao)
+        DO UPDATE SET limite = EXCLUDED.limite
+    `, [cartao, limite]);
+
+    res.json({ success: true });
+
+});
 
 module.exports = app;
