@@ -516,12 +516,6 @@ canvas {
 }
 
 @media (max-width: 768px) {
-    .chart-container {
-        height: 320px;
-    }
-}
-
-@media (max-width: 768px) {
 
     body {
         padding: 12px;
@@ -538,6 +532,14 @@ canvas {
 
     .chart-container {
         height: 300px;
+    }
+
+    thead {
+        display: none;
+    }
+
+    table {
+        display: none;
     }
 
 }
