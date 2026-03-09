@@ -1,5 +1,5 @@
 let transactions = [];
-let cardLimits = JSON.parse(localStorage.getItem("cardLimits")) || {};
+let cardLimits = {};
 let goal = parseFloat(localStorage.getItem("goal")) || 0;
 
 let chart;
@@ -42,6 +42,19 @@ async function loadTransactions() {
     }));
 
     render();
+}
+
+async function loadCardLimits() {
+
+    const response = await fetch(`${API_URL}/limites`);
+    const data = await response.json();
+
+    cardLimits = {};
+
+    data.forEach(l => {
+        cardLimits[l.cartao] = parseFloat(l.limite);
+    });
+
 }
 
 async function loadCategoriesByType(tipo) {
@@ -283,11 +296,23 @@ function openLimit(card) {
     document.getElementById("limit-modal").classList.add("active");
 }
 
-document.getElementById("save-limit").onclick = function () {
+document.getElementById("save-limit").onclick = async function () {
+
     const value = parseFloat(document.getElementById("limit-input").value);
-    cardLimits[selectedCard] = value;
-    localStorage.setItem("cardLimits", JSON.stringify(cardLimits));
+
+    await fetch(`${API_URL}/limites`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            cartao: selectedCard,
+            limite: value
+        })
+    });
+
+    await loadCardLimits();
+
     document.getElementById("limit-modal").classList.remove("active");
+
     render();
 };
 
@@ -366,7 +391,7 @@ document.getElementById("save-goal").onclick = function () {
 
 function renderChart() {
 
-    const ctx = document.getElementById("expenseChart");
+    const ctx = document.getElementById("expenseChart").getContext("2d");
     let filtered = [...transactions];
     const now = new Date();
 
@@ -429,6 +454,7 @@ function renderChart() {
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: { legend: { position: "bottom" } }
         }
     });
@@ -478,5 +504,6 @@ document.querySelectorAll(".filters select").forEach(select => {
     select.addEventListener("change", render);
 });
 
+await loadCardLimits();
 loadTransactions();
 updateOriginField();
