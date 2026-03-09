@@ -1,28 +1,23 @@
 let transactions = [];
 let cardLimits = {};
 let goal = parseFloat(localStorage.getItem("goal")) || 0;
-
 let chart;
 let selectedCard = null;
 let chartMode = "cartao"; // cartao ou relacao
 let chartPeriod = "tudo"; // mes, ano, tudo
+let saldoElemento;
 
-const saldoElemento = document.getElementById("saldo");
 const transactionsList = document.getElementById("transactions-list");
 const cardSummary = document.getElementById("card-summary-list");
 const goalInput = document.getElementById("goal-input");
 const goalStatus = document.getElementById("goal-status");
 const progressFill = document.getElementById("progress-fill");
-
 const transactionModal = document.getElementById("transaction-modal");
-
 const typeSelect = document.getElementById("transaction-type");
 const originSelect = document.getElementById("transaction-origin");
 const originLabel = document.getElementById("origin-label");
 const originGroup = document.getElementById("origin-group");
-
 const categorySelect = document.getElementById("transaction-category");
-
 const API_URL = "/api";
 
 typeSelect.addEventListener("change", updateOriginField);
@@ -575,6 +570,8 @@ document.querySelectorAll(".filters select").forEach(select => {
 });
 
 async function init() {
+    saldoElemento = document.getElementById("saldo");
+
     await loadCardLimits();
     await loadTransactions();
     updateOriginField();
