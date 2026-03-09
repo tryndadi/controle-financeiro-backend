@@ -32,9 +32,17 @@ app.get("/api/categorias/:tipo", async (req, res) => {
 
 app.get("/api/transacoes", async (req, res) => {
 
-    const result = await pool.query(
-        "SELECT * FROM transacoes ORDER BY id DESC"
-    );
+    const result = await pool.query(`
+    SELECT 
+        id,
+        descricao AS description,
+        valor AS amount,
+        tipo AS type,
+        data AS date,
+        origem AS origin
+    FROM transacoes
+    ORDER BY id DESC
+`);
 
     res.json(result.rows);
 });
@@ -58,6 +66,7 @@ app.delete("/api/transacoes/:id", async (req, res) => {
     await pool.query("DELETE FROM transacoes WHERE id=$1", [id]);
 
     res.json({ success: true });
+
 
 });
 // BUSCAR limites

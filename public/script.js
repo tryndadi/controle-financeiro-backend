@@ -34,11 +34,11 @@ async function loadTransactions() {
 
     transactions = data.map(t => ({
         id: t.id,
-        date: t.data,
-        type: t.tipo,
-        description: t.descricao,
-        amount: parseFloat(t.valor),
-        origin: t.origem
+        date: t.date,
+        type: t.type,
+        description: t.description,
+        amount: parseFloat(t.amount),
+        origin: t.origin
     }));
 
     render();
