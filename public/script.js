@@ -76,14 +76,6 @@ async function loadCategoriesByType(tipo) {
 
 }
 
-let saldo = parseFloat(saldoElemento.innerText);
-
-if (saldo < 0) {
-    saldoElemento.classList.add("negativo");
-} else {
-    saldoElemento.classList.remove("negativo");
-}
-
 function formatDate(dateString) {
 
     const date = new Date(dateString);
@@ -197,11 +189,16 @@ function render() {
 
 function renderBalance() {
     let total = 0;
+
     transactions.forEach(t => {
         if (t.type === "receita") total += t.amount;
         else total -= t.amount;
     });
+
     saldoElemento.textContent = format(total);
+
+    // 🔴 saldo vermelho quando negativo
+    saldoElemento.classList.toggle("negativo", total < 0);
 }
 
 function renderTable() {
