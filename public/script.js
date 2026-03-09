@@ -7,7 +7,7 @@ let selectedCard = null;
 let chartMode = "cartao"; // cartao ou relacao
 let chartPeriod = "tudo"; // mes, ano, tudo
 
-const balanceEl = document.getElementById("current-balance");
+const saldoElemento = document.getElementById("saldo");
 const transactionsList = document.getElementById("transactions-list");
 const cardSummary = document.getElementById("card-summary-list");
 const goalInput = document.getElementById("goal-input");
@@ -76,6 +76,14 @@ async function loadCategoriesByType(tipo) {
 
 }
 
+let saldo = parseFloat(saldoElemento.innerText);
+
+if (saldo < 0) {
+    saldoElemento.classList.add("negativo");
+} else {
+    saldoElemento.classList.remove("negativo");
+}
+
 function formatDate(dateString) {
 
     const date = new Date(dateString);
@@ -84,8 +92,6 @@ function formatDate(dateString) {
         day: "2-digit",
         month: "2-digit",
         year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit"
     });
 
 }
@@ -195,7 +201,7 @@ function renderBalance() {
         if (t.type === "receita") total += t.amount;
         else total -= t.amount;
     });
-    balanceEl.textContent = format(total);
+    saldoElemento.textContent = format(total);
 }
 
 function renderTable() {
@@ -372,15 +378,23 @@ function renderGoal() {
     }
 
     if (total <= 0) {
+
+        document.querySelector(".progress-bar").style.display = "block";
+
         progressFill.style.width = "0%";
-        document.querySelector(".progress-bar").style.display = "none";
-        goalStatus.textContent = `Meta atual: ${format(goal)}`;
+
+        let remaining = goal - total;
+
+        goalStatus.textContent = `Faltam ${format(remaining)} para atingir a meta`;
+
+        progressFill.style.background = "linear-gradient(90deg, #b91c1c, #ef4444)";
+
         return;
     }
 
     document.querySelector(".progress-bar").style.display = "block";
 
-    let percent = Math.min((total / goal) * 100, 100);
+    let percent = Math.max(0, Math.min((total / goal) * 100, 100));
     progressFill.style.width = percent + "%";
 
     // 🎨 MUDANÇA DINÂMICA DE COR
@@ -528,7 +542,7 @@ document.getElementById("transaction-form").onsubmit = async function (e) {
         valor: parseFloat(document.getElementById("transaction-amount").value),
         tipo: document.getElementById("transaction-type").value,
         origem: document.getElementById("transaction-origin").value,
-        data: document.getElementById("transaction-date").value
+        date: document.getElementById("transaction-date").value + "T12:00:00"
     };
 
     await fetch(`${API_URL}/transacoes`, {

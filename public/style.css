@@ -473,19 +473,18 @@ tr:hover {
 
 #open-modal {
 
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
+    padding: 8px 14px;
+    font-size: 14px;
+    border-radius: 8px;
 
-    width: 60px;
-    height: 60px;
+}
 
-    border-radius: 50%;
-    font-size: 28px;
+.negativo {
+    color: #d32f2f;
+    font-weight: bold;
+}
 
-    background: #2ecc71;
-    color: white;
-
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-
+.positivo {
+    color: #2e7d32;
+    font-weight: bold;
 }
