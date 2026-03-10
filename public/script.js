@@ -73,7 +73,7 @@ async function loadCategoriesByType(tipo) {
 
 function formatDate(dateString) {
 
-    const date = new Date(dateString);
+    const date = new Date(dateString + "T12:00:00");
 
     return date.toLocaleString("pt-BR", {
         day: "2-digit",
@@ -582,7 +582,7 @@ document.getElementById("transaction-form").onsubmit = async function (e) {
         valor: parseFloat(document.getElementById("transaction-amount").value),
         tipo: document.getElementById("transaction-type").value,
         origem: document.getElementById("transaction-origin").value,
-        date: dateInput ? new Date(dateInput + "T12:00:00") : new Date()
+        date: dateInput
     };
 
     await fetch(`${API_URL}/transacoes`, {
