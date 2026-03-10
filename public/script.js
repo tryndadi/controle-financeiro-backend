@@ -8,7 +8,6 @@ let chartPeriod = "tudo"; // mes, ano, tudo
 let editingTransactionId = null;
 
 const transactionsList = document.getElementById("transactions-list");
-transactionsList.addEventListener("click", handleTableClick);
 const cardSummary = document.getElementById("card-summary-list");
 const goalInput = document.getElementById("goal-input");
 const goalStatus = document.getElementById("goal-status");
@@ -23,6 +22,10 @@ const API_URL = "/api";
 const $ = (id) => document.getElementById(id);
 
 typeSelect.addEventListener("change", updateOriginField);
+
+if (transactionsList) {
+    transactionsList.addEventListener("click", handleTableClick);
+}
 
 async function loadTransactions() {
 
@@ -594,11 +597,11 @@ function debounce(fn, delay = 300) {
 
 function renderChart() {
 
-    if (!filtered.length) return;
-
     const ctx = document.getElementById("expenseChart").getContext("2d");
     let filtered = [...transactions];
     const now = new Date();
+
+    if (!filtered.length) return;
 
     // FILTRO PERÍODO
     if (chartPeriod === "mes") {
@@ -761,13 +764,6 @@ document.getElementById("fab-add").onclick = () => {
 document.querySelectorAll(".filters select").forEach(select => {
     select.addEventListener("change", debounce(render, 150));
 });
-
-async function init() {
-
-    await loadCardLimits();
-    await loadTransactions();
-    updateOriginField();
-}
 
 let resizeTimer;
 
