@@ -300,24 +300,8 @@ function renderCardSummary() {
         });
 
     Object.entries(totals).forEach(([card, total]) => {
-        let limit;
+        const limit = cardLimits[card] || 0;
 
-        let saldo = 0;
-
-        transactions.forEach(t => {
-            if (t.type === "receita") saldo += t.amount;
-            else saldo -= t.amount;
-        });
-
-        if (card === "Pix" || card === "Dinheiro") {
-
-            limit = saldo > 0 ? saldo : 0;
-
-        } else {
-
-            limit = cardLimits[card] || 0;
-
-        }
         const row = document.createElement("tr");
         row.innerHTML = `
 <td>${card}</td>
@@ -623,6 +607,9 @@ document.getElementById("fab-add").onclick = () => {
 
     form.reset();
     updateOriginField();
+
+    document.getElementById("transaction-date").value =
+        new Date().toISOString().split("T")[0];
 
     document.getElementById("transaction-modal").classList.add("active");
 
