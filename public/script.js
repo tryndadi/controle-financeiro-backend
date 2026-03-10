@@ -1,6 +1,6 @@
 let transactions = [];
 let cardLimits = {};
-let goal = parseFloat(localStorage.getItem("goal")) || 0;
+let goal = Number(localStorage.getItem("goal")) || 0;
 let chart;
 let selectedCard = null;
 let chartMode = "cartao"; // cartao ou relacao
@@ -19,6 +19,7 @@ const originLabel = document.getElementById("origin-label");
 const originGroup = document.getElementById("origin-group");
 const categorySelect = document.getElementById("transaction-category");
 const API_URL = "/api";
+const $ = (id) => document.getElementById(id);
 
 typeSelect.addEventListener("change", updateOriginField);
 
@@ -32,7 +33,7 @@ async function loadTransactions() {
         date: t.date,
         type: t.type,
         description: t.description,
-        amount: parseFloat(t.amount),
+        amount: Number(t.amount),
         origin: t.origin
     }));
 
@@ -47,7 +48,7 @@ async function loadCardLimits() {
     cardLimits = {};
 
     data.forEach(l => {
-        cardLimits[l.cartao] = parseFloat(l.limite);
+        cardLimits[l.cartao] = Number(l.limite);
     });
 
 }
@@ -453,7 +454,7 @@ function openLimit(card) {
 
 document.getElementById("save-limit").onclick = async function () {
 
-    const value = parseFloat(document.getElementById("limit-input").value);
+    const value = Number(document.getElementById("limit-input").value);
 
     await fetch(`${API_URL}/limites`, {
         method: "POST",
@@ -547,10 +548,26 @@ function renderGoal() {
 }
 
 document.getElementById("save-goal").onclick = function () {
-    goal = parseFloat(goalInput.value);
+    goal = Number(goalInput.value);
     localStorage.setItem("goal", goal);
     render();
 };
+
+function debounce(fn, delay = 300) {
+
+    let timer;
+
+    return function (...args) {
+
+        clearTimeout(timer);
+
+        timer = setTimeout(() => {
+            fn.apply(this, args);
+        }, delay);
+
+    };
+
+}
 
 function renderChart() {
 
@@ -651,7 +668,7 @@ document.getElementById("transaction-form").onsubmit = async function (e) {
 
     const data = {
         descricao: document.getElementById("transaction-description").value,
-        valor: parseFloat(document.getElementById("transaction-amount").value),
+        valor: Number(document.getElementById("transaction-amount").value),
         tipo: document.getElementById("transaction-type").value,
         origem: document.getElementById("transaction-origin").value,
         data: document.getElementById("transaction-date").value
@@ -717,7 +734,7 @@ document.getElementById("fab-add").onclick = () => {
 };
 
 document.querySelectorAll(".filters select").forEach(select => {
-    select.addEventListener("change", render);
+    select.addEventListener("change", debounce(render, 150));
 });
 
 async function init() {
