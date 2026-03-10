@@ -180,6 +180,72 @@ button {
 
 }
 
+/* FORM TRANSACTION GRID */
+
+.transaction-grid {
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+
+}
+
+#transaction-description {
+
+    grid-column: span 2;
+
+}
+
+.transaction-grid button {
+
+    grid-column: span 2;
+    margin-top: 5px;
+
+}
+
+#origin-group {
+
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+}
+
+/* LIMIT MODAL */
+
+.limit-modal {
+
+    position: fixed;
+    inset: 0;
+
+    background: rgba(0, 0, 0, 0.6);
+
+    display: none;
+
+    justify-content: center;
+    align-items: center;
+
+    z-index: 1100;
+
+}
+
+.limit-modal.active {
+
+    display: flex;
+
+}
+
+.limit-modal-content {
+
+    background: #1f2937;
+    padding: 25px;
+
+    border-radius: 16px;
+
+    width: 320px;
+
+}
+
 /* esconder FAB no desktop */
 
 @media (min-width:769px) {
