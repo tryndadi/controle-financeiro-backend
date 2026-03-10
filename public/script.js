@@ -589,4 +589,16 @@ async function init() {
     updateOriginField();
 }
 
+let resizeTimer;
+
+window.addEventListener("resize", () => {
+
+    clearTimeout(resizeTimer);
+
+    resizeTimer = setTimeout(() => {
+        render();
+    }, 200);
+
+});
+
 init();
