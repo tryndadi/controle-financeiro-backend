@@ -783,11 +783,8 @@ window.addEventListener("resize", () => {
 
 async function init() {
 
-    await Promise.all([
-        loadCardLimits(),
-        loadTransactions()
-    ]);
-
-    updateOriginField();
+    await loadCardLimits();
+    await loadTransactions();
 
 }
+init();
