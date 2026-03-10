@@ -6,6 +6,10 @@ let selectedCard = null;
 let chartMode = "cartao"; // cartao ou relacao
 let chartPeriod = "tudo"; // mes, ano, tudo
 let editingTransactionId = null;
+let chartDirty = true;
+let filteredCache = null;
+let transactionById = {};
+let isMobile = window.innerWidth < 768;
 
 const transactionsList = document.getElementById("transactions-list");
 const cardSummary = document.getElementById("card-summary-list");
@@ -40,6 +44,14 @@ async function loadTransactions() {
         amount: Number(t.amount),
         origin: t.origin
     }));
+
+    transactionsById = {};
+
+    transactions.forEach(t => {
+        transactionsById[t.id] = t;
+    });
+
+    chartDirty = true;
 
     populateCardFilter();
 
@@ -78,6 +90,16 @@ async function loadCategoriesByType(tipo) {
 
 }
 
+function getFilteredTransactions() {
+
+    if (filteredCache) return filteredCache;
+
+    filteredCache = applyFilters();
+
+    return filteredCache;
+
+}
+
 function handleTableClick(e) {
 
     const btn = e.target.closest("button");
@@ -99,21 +121,18 @@ function handleTableClick(e) {
     }
 
     if (btn.classList.contains("cancel-btn")) {
-        render();
+        render({ table: true });
     }
-
 }
 
 async function saveInlineEdit(row, id) {
 
     const data = {
-
         descricao: row.querySelector(".edit-desc").value,
         valor: Number(row.querySelector(".edit-amount").value),
         tipo: row.querySelector(".edit-type").value,
         origem: row.querySelector(".edit-origin").value,
         data: row.querySelector(".edit-date").value
-
     };
 
     await fetch(`${API_URL}/transacoes/${id}`, {
@@ -130,11 +149,15 @@ async function saveInlineEdit(row, id) {
 
 function makeRowEditable(row, id) {
 
-    const t = transactions.find(t => t.id === id);
+    const t = transactionsById[id];
     if (!t) return;
 
+    row.dataset.id = id;
+
     row.innerHTML = `
-        <td><input type="date" value="${t.date}" class="edit-date"></td>
+        <td>
+            <input type="date" value="${t.date}" class="edit-date">
+        </td>
 
         <td>
             <select class="edit-type">
@@ -143,15 +166,21 @@ function makeRowEditable(row, id) {
             </select>
         </td>
 
-        <td><input type="text" value="${t.description}" class="edit-desc"></td>
+        <td>
+            <input type="text" value="${t.description}" class="edit-desc">
+        </td>
 
-        <td><input type="text" value="${t.origin}" class="edit-origin"></td>
+        <td>
+            <input type="text" value="${t.origin}" class="edit-origin">
+        </td>
 
-        <td><input type="number" value="${t.amount}" class="edit-amount"></td>
+        <td>
+            <input type="number" value="${t.amount}" class="edit-amount">
+        </td>
 
         <td>
             <button class="save-btn">💾</button>
-            <button class="cancel-btn">❌</button>
+            <button class="cancel-btn">✖</button>
         </td>
     `;
 
@@ -159,7 +188,7 @@ function makeRowEditable(row, id) {
 
 function editTransaction(id) {
 
-    const transaction = transactions.find(t => t.id === id);
+    const transaction = transactionsById[id];
 
     if (!transaction) return;
 
@@ -254,7 +283,8 @@ document.getElementById("cancel-transaction").onclick = function () {
 document.getElementById("toggle-chart-mode").onclick = function () {
     chartMode = chartMode === "cartao" ? "relacao" : "cartao";
     this.textContent = "Modo: " + (chartMode === "cartao" ? "Cartão" : "Receita x Despesa");
-    renderChart();
+    chartDirty = true;
+    render({ chart: true });
 };
 
 document.getElementById("toggle-chart-period").onclick = function () {
@@ -266,7 +296,8 @@ document.getElementById("toggle-chart-period").onclick = function () {
         (chartPeriod === "mes" ? "Mês" :
             chartPeriod === "ano" ? "Ano" : "Tudo");
 
-    renderChart();
+    chartDirty = true;
+    render({ chart: true });
 };
 
 // Executa ao carregar
@@ -282,14 +313,23 @@ function format(value) {
     return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
-function render() {
+function render({
+    balance = true,
+    table = true,
+    cards = true,
+    goal = true,
+    chart = true
+} = {}) {
 
-    renderBalance();
-    renderTable();
-    renderCardSummary();
-    renderGoal();
-    renderChart();
+    if (balance) renderBalance();
+    if (table) renderTable();
+    if (cards) renderCardSummary();
+    if (goal) renderGoal();
 
+    if (chart && chartDirty) {
+        renderChart();
+        chartDirty = false;
+    }
 }
 
 function renderBalance() {
@@ -358,9 +398,9 @@ function applyFilters() {
 
 function renderTable() {
 
-    const filtered = applyFilters();
+    const filtered = getFilteredTransactions();
 
-    if (window.innerWidth < 768) {
+    if (isMobile) {
         renderMobileCards(filtered);
         return;
     }
@@ -762,11 +802,20 @@ document.getElementById("fab-add").onclick = () => {
 };
 
 document.querySelectorAll(".filters select").forEach(select => {
-    select.addEventListener("change", debounce(render, 150));
+    select.addEventListener("change", debounce(() => {
+
+        filteredCache = null;
+        chartDirty = true;
+
+        render({
+            table: true,
+            chart: true
+        });
+
+    }, 150));
 });
 
 let resizeTimer;
-
 let lastWidth = window.innerWidth;
 
 window.addEventListener("resize", () => {
@@ -777,7 +826,15 @@ window.addEventListener("resize", () => {
 
     clearTimeout(resizeTimer);
 
-    resizeTimer = setTimeout(render, 200);
+    resizeTimer = setTimeout(() => {
+
+        isMobile = window.innerWidth < 768;
+
+        render({
+            table: true
+        });
+
+    }, 200);
 
 });
 
