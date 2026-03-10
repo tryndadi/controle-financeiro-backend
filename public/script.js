@@ -567,6 +567,12 @@ document.getElementById("open-modal").onclick = function () {
     document.getElementById("transaction-modal").classList.add("active");
 };
 
+document.getElementById("fab-add").onclick = () => {
+
+    document.getElementById("modal-overlay").classList.add("active");
+
+};
+
 document.querySelectorAll(".filters select").forEach(select => {
     select.addEventListener("change", render);
 });
