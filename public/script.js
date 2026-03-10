@@ -18,7 +18,6 @@ const originLabel = document.getElementById("origin-label");
 const originGroup = document.getElementById("origin-group");
 const categorySelect = document.getElementById("transaction-category");
 const API_URL = "/api";
-const dateInput = document.getElementById("transaction-date").value;
 
 typeSelect.addEventListener("change", updateOriginField);
 
@@ -73,7 +72,11 @@ async function loadCategoriesByType(tipo) {
 
 function formatDate(dateString) {
 
+    if (!dateString) return "-";
+
     const date = new Date(dateString + "T12:00:00");
+
+    return date.toLocaleDateString("pt-BR");
 
     return date.toLocaleString("pt-BR", {
         day: "2-digit",
@@ -582,7 +585,7 @@ document.getElementById("transaction-form").onsubmit = async function (e) {
         valor: parseFloat(document.getElementById("transaction-amount").value),
         tipo: document.getElementById("transaction-type").value,
         origem: document.getElementById("transaction-origin").value,
-        date: dateInput
+        date: document.getElementById("transaction-date").value
     };
 
     await fetch(`${API_URL}/transacoes`, {

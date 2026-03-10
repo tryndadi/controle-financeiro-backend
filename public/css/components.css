@@ -1,3 +1,12 @@
+/* 
+COMPONENTS
+- cards
+- buttons
+- modals
+- forms
+- progress bars
+*/
+
 /* CARDS */
 
 .card {
@@ -243,6 +252,32 @@ button {
     border-radius: 16px;
 
     width: 320px;
+
+}
+
+.chart-header {
+
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 10px;
+}
+
+.chart-header h3 {
+
+    text-align: center;
+
+}
+
+#toggle-chart-mode {
+
+    justify-self: start;
+
+}
+
+#toggle-chart-period {
+
+    justify-self: end;
 
 }
 
