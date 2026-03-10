@@ -173,12 +173,15 @@ function format(value) {
 }
 
 function render() {
+
+    populateCardFilter();
+
     renderBalance();
     renderTable();
     renderCardSummary();
     renderGoal();
     renderChart();
-    populateCardFilter();
+
 }
 
 function renderBalance() {
@@ -198,7 +201,7 @@ function renderBalance() {
     saldoElemento.classList.toggle("negativo", total < 0);
 }
 
-function renderTable() {
+function applyFilters() {
 
     const typeFilter = document.getElementById("filter-type").value;
     const cardFilter = document.getElementById("filter-card").value;
@@ -207,10 +210,6 @@ function renderTable() {
 
     let filtered = [...transactions];
 
-    if (window.innerWidth < 768) {
-        renderMobileCards(filtered);
-        return;
-    }
     // FILTRO TIPO
     if (typeFilter !== "todos") {
         filtered = filtered.filter(t => t.type === typeFilter);
@@ -223,6 +222,7 @@ function renderTable() {
 
     // FILTRO PERÍODO
     const now = new Date();
+
     if (periodFilter === "mes") {
         filtered = filtered.filter(t => {
             const d = new Date(t.date);
@@ -245,19 +245,39 @@ function renderTable() {
             : b.amount - a.amount;
     });
 
+    return filtered;
+}
+
+function renderTable() {
+
+    const filtered = applyFilters();
+
+    if (window.innerWidth < 768) {
+        renderMobileCards(filtered);
+        return;
+    }
+
     transactionsList.innerHTML = "";
 
-    filtered.forEach((t, i) => {
+    filtered.forEach((t) => {
+
         const row = document.createElement("tr");
+
         row.innerHTML = `
             <td>${formatDate(t.date)}</td>
             <td>${t.type}</td>
             <td>${t.description}</td>
             <td>${t.origin || "-"}</td>
             <td>${format(t.amount)}</td>
-            <td><button onclick="deleteTransaction(${t.id})">🗑</button></td>
+            <td>
+                <button onclick="deleteTransaction(${t.id})">
+                    🗑
+                </button>
+            </td>
         `;
+
         transactionsList.appendChild(row);
+
     });
 }
 
