@@ -382,12 +382,11 @@ canvas {
 }
 
 .limit-cell {
-
-    display: grid;
-    grid-template-columns: 1fr auto auto auto;
+    display: flex;
     align-items: center;
-    gap: 10px;
-
+    justify-content: space-between;
+    gap: 8px;
+    white-space: nowrap;
 }
 
 .limit-gear {
