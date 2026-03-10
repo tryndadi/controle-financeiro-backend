@@ -585,7 +585,7 @@ document.getElementById("transaction-form").onsubmit = async function (e) {
         valor: parseFloat(document.getElementById("transaction-amount").value),
         tipo: document.getElementById("transaction-type").value,
         origem: document.getElementById("transaction-origin").value,
-        date: document.getElementById("transaction-date").value
+        data: document.getElementById("transaction-date").value
     };
 
     await fetch(`${API_URL}/transacoes`, {
