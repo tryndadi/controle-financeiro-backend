@@ -382,9 +382,12 @@ canvas {
 }
 
 .limit-cell {
-    display: flex;
+
+    display: grid;
+    grid-template-columns: 1fr auto auto auto;
     align-items: center;
-    justify-content: space-between;
+    gap: 10px;
+
 }
 
 .limit-gear {

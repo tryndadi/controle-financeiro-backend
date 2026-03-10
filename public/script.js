@@ -569,7 +569,12 @@ document.getElementById("open-modal").onclick = function () {
 
 document.getElementById("fab-add").onclick = () => {
 
-    document.getElementById("modal-overlay").classList.add("active");
+    const form = document.getElementById("transaction-form");
+
+    form.reset();
+    updateOriginField();
+
+    document.getElementById("transaction-modal").classList.add("active");
 
 };
 
