@@ -5,8 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Controle Financeiro</title>
-    <link rel="stylesheet" href="/style.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/table.css">
+    <link rel="stylesheet" href="css/mobile.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
 </head>
 
 <body>
@@ -127,7 +130,21 @@
                             <th>Ações</th>
                         </tr>
                     </thead>
-                    <tbody id="transactions-list"></tbody>
+                    <tbody id="transactions-list">
+
+                        <tr class="skeleton">
+                            <td colspan="6" style="height:40px"></td>
+                        </tr>
+
+                        <tr class="skeleton">
+                            <td colspan="6" style="height:40px"></td>
+                        </tr>
+
+                        <tr class="skeleton">
+                            <td colspan="6" style="height:40px"></td>
+                        </tr>
+
+                    </tbody>
                 </table>
             </div>
         </section>

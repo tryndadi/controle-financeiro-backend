@@ -42,7 +42,7 @@ app.get("/api/transacoes", async (req, res) => {
         origem AS origin
     FROM transacoes
     ORDER BY id DESC
-`);
+    `);
 
     res.json(result.rows);
 });

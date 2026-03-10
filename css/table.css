@@ -1,0 +1,65 @@
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+thead {
+    background: #14532d;
+}
+
+th,
+td {
+    padding: 10px;
+    text-align: left;
+}
+
+tr:nth-child(even) {
+    background: #16201b;
+}
+
+tr:hover {
+    background: #1f2b24;
+}
+
+/* TRANSACTION CARD (mobile) */
+
+.transaction-card {
+    background: #1e1e1e;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    width: 100%;
+
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+}
+
+.card-body {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: #aaa;
+}
+
+/* VALORES */
+
+.negativo {
+    color: #d32f2f;
+    font-weight: bold;
+}
+
+.positivo {
+    color: #2e7d32;
+    font-weight: bold;
+}
