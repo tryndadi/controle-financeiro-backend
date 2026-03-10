@@ -97,4 +97,25 @@ app.post("/api/limites", async (req, res) => {
 
 });
 
+app.put("/api/transacoes/:id", async (req, res) => {
+
+    const { id } = req.params;
+    const { descricao, valor, tipo, origem, data } = req.body;
+
+    const result = await pool.query(
+        `UPDATE transacoes
+         SET descricao=$1,
+             valor=$2,
+             tipo=$3,
+             origem=$4,
+             data=$5
+         WHERE id=$6
+         RETURNING *`,
+        [descricao, valor, tipo, origem, data, id]
+    );
+
+    res.json(result.rows[0]);
+
+});
+
 module.exports = app;

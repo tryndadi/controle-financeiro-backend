@@ -5,6 +5,7 @@ let chart;
 let selectedCard = null;
 let chartMode = "cartao"; // cartao ou relacao
 let chartPeriod = "tudo"; // mes, ano, tudo
+let editingTransactionId = null;
 
 const transactionsList = document.getElementById("transactions-list");
 const cardSummary = document.getElementById("card-summary-list");
@@ -68,6 +69,90 @@ async function loadCategoriesByType(tipo) {
 
     });
 
+}
+
+async function saveEdit(id) {
+
+    const data = {
+        descricao: document.getElementById(`edit-desc-${id}`).value,
+        valor: Number(document.getElementById(`edit-amount-${id}`).value),
+        tipo: document.getElementById(`edit-type-${id}`).value,
+        origem: document.getElementById(`edit-origin-${id}`).value,
+        data: document.getElementById(`edit-date-${id}`).value
+    };
+
+    await fetch(`${API_URL}/transacoes/${id}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+    });
+
+    await loadTransactions();
+}
+
+function editTransaction(id) {
+
+    const transaction = transactions.find(t => t.id === id);
+
+    if (!transaction) return;
+
+    editingTransactionId = id;
+
+    document.getElementById("transaction-description").value = transaction.description;
+    document.getElementById("transaction-amount").value = transaction.amount;
+    document.getElementById("transaction-type").value = transaction.type;
+    document.getElementById("transaction-date").value = transaction.date;
+
+    updateOriginField();
+
+    setTimeout(() => {
+        document.getElementById("transaction-origin").value = transaction.origin;
+    }, 50);
+
+    transactionModal.classList.add("active");
+
+}
+
+function editRow(id) {
+
+    const transaction = transactions.find(t => t.id === id);
+    if (!transaction) return;
+
+    const row = transactionsList.querySelector(`tr[data-id="${id}"]`);
+
+    if (!row) return;
+
+    row.innerHTML = `
+        <td>
+            <input type="date" id="edit-date-${id}" value="${transaction.date}">
+        </td>
+
+        <td>
+            <select id="edit-type-${id}">
+                <option value="receita" ${transaction.type === "receita" ? "selected" : ""}>Receita</option>
+                <option value="despesa" ${transaction.type === "despesa" ? "selected" : ""}>Despesa</option>
+            </select>
+        </td>
+
+        <td>
+            <input type="text" id="edit-desc-${id}" value="${transaction.description}">
+        </td>
+
+        <td>
+            <input type="text" id="edit-origin-${id}" value="${transaction.origin}">
+        </td>
+
+        <td>
+            <input type="number" id="edit-amount-${id}" value="${transaction.amount}">
+        </td>
+
+        <td>
+            <button onclick="saveEdit(${id})">💾</button>
+            <button onclick="render()">❌</button>
+        </td>
+    `;
 }
 
 function formatDate(dateString) {
@@ -262,6 +347,7 @@ function renderTable() {
     filtered.forEach((t) => {
 
         const row = document.createElement("tr");
+        row.dataset.id = t.id;
 
         row.innerHTML = `
             <td>${formatDate(t.date)}</td>
@@ -270,9 +356,8 @@ function renderTable() {
             <td>${t.origin || "-"}</td>
             <td>${format(t.amount)}</td>
             <td>
-                <button onclick="deleteTransaction(${t.id})">
-                    🗑
-                </button>
+                <button onclick="editRow(${t.id})">✏</button>
+                <button onclick="deleteTransaction(${t.id})">🗑</button>
             </td>
         `;
 
@@ -287,7 +372,7 @@ async function deleteTransaction(id) {
         method: "DELETE"
     });
 
-    loadTransactions();
+    await loadTransactions();
 }
 
 function renderCardSummary() {
@@ -345,9 +430,13 @@ function renderMobileCards(filtered) {
                 <span>${formatDate(t.date)}</span>
             </div>
 
-            <button onclick="deleteTransaction(${t.id})">
-                Excluir
-            </button>
+<button onclick="editTransaction(${t.id})">
+    Editar
+</button>
+
+<button onclick="deleteTransaction(${t.id})">
+    Excluir
+</button>
         `;
 
         transactionsList.appendChild(card);
@@ -560,7 +649,7 @@ document.getElementById("transaction-form").onsubmit = async function (e) {
 
     e.preventDefault();
 
-    const newTransaction = {
+    const data = {
         descricao: document.getElementById("transaction-description").value,
         valor: parseFloat(document.getElementById("transaction-amount").value),
         tipo: document.getElementById("transaction-type").value,
@@ -568,22 +657,34 @@ document.getElementById("transaction-form").onsubmit = async function (e) {
         data: document.getElementById("transaction-date").value
     };
 
-    await fetch(`${API_URL}/transacoes`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(newTransaction)
-    });
+    if (editingTransactionId) {
 
-    document.getElementById("transaction-modal").classList.remove("active");
+        await fetch(`${API_URL}/transacoes/${editingTransactionId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        });
+
+        editingTransactionId = null;
+
+    } else {
+
+        await fetch(`${API_URL}/transacoes`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        });
+
+    }
+
+    transactionModal.classList.remove("active");
 
     this.reset();
 
-    // 🔧 garante que os campos fiquem corretos novamente
     updateOriginField();
 
-    loadTransactions();
+    await loadTransactions();
+
 };
 
 document.getElementById("open-modal").onclick = function () {
