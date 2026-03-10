@@ -515,6 +515,10 @@ canvas {
     font-weight: bold;
 }
 
+tbody tr {
+    display: block;
+}
+
 @media (max-width: 768px) {
 
     body {
@@ -535,10 +539,6 @@ canvas {
     }
 
     thead {
-        display: none;
-    }
-
-    table {
         display: none;
     }
 
