@@ -18,6 +18,7 @@ const originLabel = document.getElementById("origin-label");
 const originGroup = document.getElementById("origin-group");
 const categorySelect = document.getElementById("transaction-category");
 const API_URL = "/api";
+const dateInput = document.getElementById("transaction-date").value;
 
 typeSelect.addEventListener("change", updateOriginField);
 
@@ -300,14 +301,39 @@ function renderCardSummary() {
         });
 
     Object.entries(totals).forEach(([card, total]) => {
-        const limit = cardLimits[card] || 0;
+        let limit;
+
+        let saldo = 0;
+
+        transactions.forEach(t => {
+            if (t.type === "receita") saldo += t.amount;
+            else saldo -= t.amount;
+        });
+
+        if (card === "Pix" || card === "Dinheiro") {
+
+            limit = saldo > 0 ? saldo : 0;
+
+        } else {
+
+            limit = cardLimits[card] || 0;
+
+        }
         const row = document.createElement("tr");
         row.innerHTML = `
 <td>${card}</td>
 <td>${format(total)}</td>
+
 <td class="limit-cell">
+
+<span>
 ${limit ? format(limit - total) : "Sem limite"}
-<button class="limit-gear" onclick="openLimit('${card}')">⚙</button>
+</span>
+
+<button class="limit-gear" onclick="openLimit('${card}')">
+⚙
+</button>
+
 </td>
 `;
         cardSummary.appendChild(row);
@@ -556,7 +582,7 @@ document.getElementById("transaction-form").onsubmit = async function (e) {
         valor: parseFloat(document.getElementById("transaction-amount").value),
         tipo: document.getElementById("transaction-type").value,
         origem: document.getElementById("transaction-origin").value,
-        date: document.getElementById("transaction-date").value + "T12:00:00"
+        date: dateInput ? new Date(dateInput + "T12:00:00") : new Date()
     };
 
     await fetch(`${API_URL}/transacoes`, {
@@ -579,10 +605,15 @@ document.getElementById("transaction-form").onsubmit = async function (e) {
 
 document.getElementById("open-modal").onclick = function () {
 
+
+
     const form = document.getElementById("transaction-form");
 
     form.reset();
     updateOriginField();
+
+    document.getElementById("transaction-date").value =
+        new Date().toISOString().split("T")[0];
 
     document.getElementById("transaction-modal").classList.add("active");
 };
