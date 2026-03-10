@@ -8,6 +8,7 @@ let chartPeriod = "tudo"; // mes, ano, tudo
 let editingTransactionId = null;
 
 const transactionsList = document.getElementById("transactions-list");
+transactionsList.addEventListener("click", handleTableClick);
 const cardSummary = document.getElementById("card-summary-list");
 const goalInput = document.getElementById("goal-input");
 const goalStatus = document.getElementById("goal-status");
@@ -36,6 +37,8 @@ async function loadTransactions() {
         amount: Number(t.amount),
         origin: t.origin
     }));
+
+    populateCardFilter();
 
     render();
 }
@@ -72,14 +75,42 @@ async function loadCategoriesByType(tipo) {
 
 }
 
-async function saveEdit(id) {
+function handleTableClick(e) {
+
+    const btn = e.target.closest("button");
+    if (!btn) return;
+
+    const row = btn.closest("tr");
+    const id = Number(row.dataset.id);
+
+    if (btn.classList.contains("delete-btn")) {
+        deleteTransaction(id);
+    }
+
+    if (btn.classList.contains("edit-btn")) {
+        makeRowEditable(row, id);
+    }
+
+    if (btn.classList.contains("save-btn")) {
+        saveInlineEdit(row, id);
+    }
+
+    if (btn.classList.contains("cancel-btn")) {
+        render();
+    }
+
+}
+
+async function saveInlineEdit(row, id) {
 
     const data = {
-        descricao: document.getElementById(`edit-desc-${id}`).value,
-        valor: Number(document.getElementById(`edit-amount-${id}`).value),
-        tipo: document.getElementById(`edit-type-${id}`).value,
-        origem: document.getElementById(`edit-origin-${id}`).value,
-        data: document.getElementById(`edit-date-${id}`).value
+
+        descricao: row.querySelector(".edit-desc").value,
+        valor: Number(row.querySelector(".edit-amount").value),
+        tipo: row.querySelector(".edit-type").value,
+        origem: row.querySelector(".edit-origin").value,
+        data: row.querySelector(".edit-date").value
+
     };
 
     await fetch(`${API_URL}/transacoes/${id}`, {
@@ -91,6 +122,36 @@ async function saveEdit(id) {
     });
 
     await loadTransactions();
+
+}
+
+function makeRowEditable(row, id) {
+
+    const t = transactions.find(t => t.id === id);
+    if (!t) return;
+
+    row.innerHTML = `
+        <td><input type="date" value="${t.date}" class="edit-date"></td>
+
+        <td>
+            <select class="edit-type">
+                <option value="receita" ${t.type === "receita" ? "selected" : ""}>Receita</option>
+                <option value="despesa" ${t.type === "despesa" ? "selected" : ""}>Despesa</option>
+            </select>
+        </td>
+
+        <td><input type="text" value="${t.description}" class="edit-desc"></td>
+
+        <td><input type="text" value="${t.origin}" class="edit-origin"></td>
+
+        <td><input type="number" value="${t.amount}" class="edit-amount"></td>
+
+        <td>
+            <button class="save-btn">💾</button>
+            <button class="cancel-btn">❌</button>
+        </td>
+    `;
+
 }
 
 function editTransaction(id) {
@@ -104,7 +165,7 @@ function editTransaction(id) {
     document.getElementById("transaction-description").value = transaction.description;
     document.getElementById("transaction-amount").value = transaction.amount;
     document.getElementById("transaction-type").value = transaction.type;
-    document.getElementById("transaction-date").value = transaction.date;
+    $("transaction-date").value = transaction.date;
 
     updateOriginField();
 
@@ -114,46 +175,6 @@ function editTransaction(id) {
 
     transactionModal.classList.add("active");
 
-}
-
-function editRow(id) {
-
-    const transaction = transactions.find(t => t.id === id);
-    if (!transaction) return;
-
-    const row = transactionsList.querySelector(`tr[data-id="${id}"]`);
-
-    if (!row) return;
-
-    row.innerHTML = `
-        <td>
-            <input type="date" id="edit-date-${id}" value="${transaction.date}">
-        </td>
-
-        <td>
-            <select id="edit-type-${id}">
-                <option value="receita" ${transaction.type === "receita" ? "selected" : ""}>Receita</option>
-                <option value="despesa" ${transaction.type === "despesa" ? "selected" : ""}>Despesa</option>
-            </select>
-        </td>
-
-        <td>
-            <input type="text" id="edit-desc-${id}" value="${transaction.description}">
-        </td>
-
-        <td>
-            <input type="text" id="edit-origin-${id}" value="${transaction.origin}">
-        </td>
-
-        <td>
-            <input type="number" id="edit-amount-${id}" value="${transaction.amount}">
-        </td>
-
-        <td>
-            <button onclick="saveEdit(${id})">💾</button>
-            <button onclick="render()">❌</button>
-        </td>
-    `;
 }
 
 function formatDate(dateString) {
@@ -260,8 +281,6 @@ function format(value) {
 
 function render() {
 
-    populateCardFilter();
-
     renderBalance();
     renderTable();
     renderCardSummary();
@@ -345,26 +364,30 @@ function renderTable() {
 
     transactionsList.innerHTML = "";
 
+    const fragment = document.createDocumentFragment();
+
     filtered.forEach((t) => {
 
         const row = document.createElement("tr");
         row.dataset.id = t.id;
 
         row.innerHTML = `
-            <td>${formatDate(t.date)}</td>
-            <td>${t.type}</td>
-            <td>${t.description}</td>
-            <td>${t.origin || "-"}</td>
-            <td>${format(t.amount)}</td>
-            <td>
-                <button onclick="editRow(${t.id})">✏</button>
-                <button onclick="deleteTransaction(${t.id})">🗑</button>
-            </td>
-        `;
+        <td>${formatDate(t.date)}</td>
+        <td>${t.type}</td>
+        <td>${t.description}</td>
+        <td>${t.origin || "-"}</td>
+        <td>${format(t.amount)}</td>
+        <td>
+            <button class="edit-btn">✏</button>
+            <button class="delete-btn">🗑</button>
+        </td>
+    `;
 
-        transactionsList.appendChild(row);
+        fragment.appendChild(row);
 
     });
+
+    transactionsList.appendChild(fragment);
 }
 
 async function deleteTransaction(id) {
@@ -571,6 +594,8 @@ function debounce(fn, delay = 300) {
 
 function renderChart() {
 
+    if (!filtered.length) return;
+
     const ctx = document.getElementById("expenseChart").getContext("2d");
     let filtered = [...transactions];
     const now = new Date();
@@ -671,7 +696,7 @@ document.getElementById("transaction-form").onsubmit = async function (e) {
         valor: Number(document.getElementById("transaction-amount").value),
         tipo: document.getElementById("transaction-type").value,
         origem: document.getElementById("transaction-origin").value,
-        data: document.getElementById("transaction-date").value
+        data: $("transaction-date").value
     };
 
     if (editingTransactionId) {
@@ -713,7 +738,7 @@ document.getElementById("open-modal").onclick = function () {
     form.reset();
     updateOriginField();
 
-    document.getElementById("transaction-date").value =
+    $("transaction-date").value =
         new Date().toISOString().split("T")[0];
 
     document.getElementById("transaction-modal").classList.add("active");
@@ -726,7 +751,7 @@ document.getElementById("fab-add").onclick = () => {
     form.reset();
     updateOriginField();
 
-    document.getElementById("transaction-date").value =
+    $("transaction-date").value =
         new Date().toISOString().split("T")[0];
 
     document.getElementById("transaction-modal").classList.add("active");
@@ -746,14 +771,27 @@ async function init() {
 
 let resizeTimer;
 
+let lastWidth = window.innerWidth;
+
 window.addEventListener("resize", () => {
+
+    if (window.innerWidth === lastWidth) return;
+
+    lastWidth = window.innerWidth;
 
     clearTimeout(resizeTimer);
 
-    resizeTimer = setTimeout(() => {
-        render();
-    }, 200);
+    resizeTimer = setTimeout(render, 200);
 
 });
 
-init();
+async function init() {
+
+    await Promise.all([
+        loadCardLimits(),
+        loadTransactions()
+    ]);
+
+    updateOriginField();
+
+}
