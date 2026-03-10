@@ -281,6 +281,37 @@ button {
 
 }
 
+#transaction-modal {
+    position: relative;
+}
+
+#cancel-transaction {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+
+    width: 32px;
+    height: 32px;
+
+    font-size: 18px;
+
+    border: none;
+    border-radius: 50%;
+
+    background: #ef4444;
+    color: white;
+
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#cancel-transaction:hover {
+    background: #dc2626;
+}
+
 /* esconder FAB no desktop */
 
 @media (min-width:769px) {
