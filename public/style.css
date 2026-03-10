@@ -126,7 +126,6 @@ table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 10px;
-    table-layout: fixed;
 }
 
 thead {
@@ -137,7 +136,6 @@ th,
 td {
     padding: 10px;
     text-align: left;
-    table-layout: fixed;
 }
 
 tr:nth-child(even) {
@@ -384,9 +382,7 @@ canvas {
 .limit-cell {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     gap: 8px;
-    white-space: nowrap;
 }
 
 .limit-gear {
@@ -517,10 +513,6 @@ canvas {
     font-weight: bold;
 }
 
-tbody tr {
-    display: block;
-}
-
 @media (max-width: 768px) {
 
     body {
@@ -541,6 +533,10 @@ tbody tr {
     }
 
     thead {
+        display: none;
+    }
+
+    table {
         display: none;
     }
 
