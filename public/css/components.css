@@ -400,6 +400,58 @@ button {
     animation: skeleton-loading 1.2s infinite;
 }
 
+.chart-skeleton {
+
+    width: 220px;
+    height: 220px;
+
+    border-radius: 50%;
+
+    margin: auto;
+
+    background: conic-gradient(#1f2b24 0% 25%,
+            #24332b 25% 50%,
+            #1f2b24 50% 75%,
+            #24332b 75% 100%);
+
+    position: relative;
+
+    animation: rotateSkeleton 1.6s linear infinite;
+
+}
+
+.chart-skeleton::after {
+
+    content: "";
+
+    position: absolute;
+
+    top: 50%;
+    left: 50%;
+
+    width: 120px;
+    height: 120px;
+
+    transform: translate(-50%, -50%);
+
+    border-radius: 50%;
+
+    background: #1a1f1c;
+
+}
+
+@keyframes rotateSkeleton {
+
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+
+}
+
 @keyframes highlightUpdate {
 
     0% {

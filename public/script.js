@@ -897,6 +897,8 @@ function renderChart() {
         });
 
     }
+    document.getElementById("chart-skeleton").style.display = "none";
+    document.getElementById("expenseChart").style.display = "block";
 }
 
 document.getElementById("transaction-form").onsubmit = async function (e) {
@@ -915,14 +917,12 @@ document.getElementById("transaction-form").onsubmit = async function (e) {
 
     if (editedId) {
 
-        // EDITAR TRANSAÇÃO
         await fetch(`${API_URL}/transacoes/${editedId}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data)
         });
 
-        // atualiza objeto local
         const t = transactionsById[editedId];
 
         if (t) {
@@ -933,16 +933,11 @@ document.getElementById("transaction-form").onsubmit = async function (e) {
             t.date = data.data;
         }
 
+        replaceRow(editedId);
+
         editingTransactionId = null;
 
     } else {
-
-        // NOVA TRANSAÇÃO
-        await fetch(`${API_URL}/transacoes`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
-        });
 
         const response = await fetch(`${API_URL}/transacoes`, {
             method: "POST",
@@ -951,148 +946,130 @@ document.getElementById("transaction-form").onsubmit = async function (e) {
         });
 
         const newTransaction = await response.json();
+
+        transactions.push({
+            id: newTransaction.id,
+            date: data.data,
+            type: data.tipo,
+            description: data.descricao,
+            amount: data.valor,
+            origin: data.origem
+        });
+
+        transactionsById[newTransaction.id] = transactions[transactions.length - 1];
+
+        const newRow = buildTransactionRow(transactionsById[newTransaction.id]);
+        newRow.classList.add("row-new");
+
+        transactionsList.prepend(newRow);
+
+    };
+
+    document.getElementById("open-modal").onclick = function () {
+
+
+
+        const form = document.getElementById("transaction-form");
+
+        form.reset();
+        updateOriginField();
+
+        $("transaction-date").value =
+            new Date().toISOString().split("T")[0];
+
+        document.getElementById("transaction-modal").classList.add("active");
+    };
+
+    document.getElementById("fab-add").onclick = () => {
+
+        const form = document.getElementById("transaction-form");
+
+        form.reset();
+        updateOriginField();
+
+        $("transaction-date").value =
+            new Date().toISOString().split("T")[0];
+
+        document.getElementById("transaction-modal").classList.add("active");
+
+    };
+
+    document.querySelectorAll(".filters select").forEach(select => {
+        select.addEventListener("change", debounce(() => {
+
+            filteredCache = null;
+            chartDirty = true;
+
+            render({
+                table: true,
+                chart: true
+            });
+
+        }, 150));
+    });
+
+    let resizeTimer;
+    let lastWidth = window.innerWidth;
+
+    window.addEventListener("resize", () => {
+
+        if (window.innerWidth === lastWidth) return;
+
+        lastWidth = window.innerWidth;
+
+        clearTimeout(resizeTimer);
+
+        resizeTimer = setTimeout(() => {
+
+            isMobile = window.innerWidth < 768;
+
+            render({
+                table: true
+            });
+
+        }, 200);
+
+    });
+
+    function lazyLoadChart() {
+
+        const chartContainer = document.querySelector(".chart-container");
+
+        if (!chartContainer) return;
+
+        const observer = new IntersectionObserver(entries => {
+
+            entries.forEach(entry => {
+
+                if (entry.isIntersecting) {
+
+                    chartVisible = true;
+
+                    chartDirty = true;
+
+                    render({
+                        chart: true
+                    });
+
+                    observer.disconnect();
+
+                }
+
+            });
+
+        }, {
+            threshold: 0.3
+        });
+
+        observer.observe(chartContainer);
+
     }
 
-    transactions.push({
-        id: newTransaction.id,
-        date: data.data,
-        type: data.tipo,
-        description: data.descricao,
-        amount: data.valor,
-        origin: data.origem
-    });
+    async function init() {
 
-    transactionsById[newTransaction.id] = transactions[transactions.length - 1];
+        await loadCardLimits();
+        await loadTransactions();
 
-    transactionModal.classList.remove("active");
-
-    const newRow = buildTransactionRow(transactionsById[newTransaction.id]);
-
-    newRow.classList.add("row-new");
-
-    transactionsList.prepend(newRow);
-
-    this.reset();
-
-    updateOriginField();
-
-    filteredCache = null;
-    chartDirty = true;
-
-    render({
-        chart: true,
-        cards: true,
-        balance: true,
-        table: true
-    });
-
-};
-
-document.getElementById("open-modal").onclick = function () {
-
-
-
-    const form = document.getElementById("transaction-form");
-
-    form.reset();
-    updateOriginField();
-
-    $("transaction-date").value =
-        new Date().toISOString().split("T")[0];
-
-    document.getElementById("transaction-modal").classList.add("active");
-};
-
-document.getElementById("fab-add").onclick = () => {
-
-    const form = document.getElementById("transaction-form");
-
-    form.reset();
-    updateOriginField();
-
-    $("transaction-date").value =
-        new Date().toISOString().split("T")[0];
-
-    document.getElementById("transaction-modal").classList.add("active");
-
-};
-
-document.querySelectorAll(".filters select").forEach(select => {
-    select.addEventListener("change", debounce(() => {
-
-        filteredCache = null;
-        chartDirty = true;
-
-        render({
-            table: true,
-            chart: true
-        });
-
-    }, 150));
-});
-
-let resizeTimer;
-let lastWidth = window.innerWidth;
-
-window.addEventListener("resize", () => {
-
-    if (window.innerWidth === lastWidth) return;
-
-    lastWidth = window.innerWidth;
-
-    clearTimeout(resizeTimer);
-
-    resizeTimer = setTimeout(() => {
-
-        isMobile = window.innerWidth < 768;
-
-        render({
-            table: true
-        });
-
-    }, 200);
-
-});
-
-function lazyLoadChart() {
-
-    const chartContainer = document.querySelector(".chart-container");
-
-    if (!chartContainer) return;
-
-    const observer = new IntersectionObserver(entries => {
-
-        entries.forEach(entry => {
-
-            if (entry.isIntersecting) {
-
-                chartVisible = true;
-
-                chartDirty = true;
-
-                render({
-                    chart: true
-                });
-
-                observer.disconnect();
-
-            }
-
-        });
-
-    }, {
-        threshold: 0.3
-    });
-
-    observer.observe(chartContainer);
-
-}
-
-async function init() {
-
-    await loadCardLimits();
-    await loadTransactions();
-
-    lazyLoadChart();
-}
-init();
+        lazyLoadChart();
+    }
+    init();
