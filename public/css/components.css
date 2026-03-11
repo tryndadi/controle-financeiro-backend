@@ -282,18 +282,50 @@ button {
 }
 
 #transaction-modal {
-    position: relative;
+    position: fixed;
+    inset: 0;
+
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(0, 0, 0, 0.6);
+
+    z-index: 999;
 }
+
+#transaction-modal.active {
+    display: flex;
+}
+
+#transaction-modal form {
+    position: relative;
+
+    width: 420px;
+    max-width: 90%;
+
+    padding: 24px;
+
+    border-radius: 12px;
+
+    background: #0f172a;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 
 #cancel-transaction {
     position: absolute;
-    top: 12px;
-    right: 12px;
+    top: 10px;
+    right: 10px;
 
     width: 32px;
     height: 32px;
-
-    font-size: 18px;
 
     border: none;
     border-radius: 50%;
@@ -302,10 +334,6 @@ button {
     color: white;
 
     cursor: pointer;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 #cancel-transaction:hover {
