@@ -197,6 +197,33 @@ function getFilteredTransactions() {
     return filteredCache;
 }
 
+function populateCardFilter() {
+
+    const filterCard = document.getElementById("filter-card");
+
+    if (!filterCard) return;
+
+    filterCard.innerHTML = `<option value="todos">Todos Cartões</option>`;
+
+    const cards = [...new Set(
+        transactions
+            .filter(t => t.type === "despesa")
+            .map(t => t.origin)
+    )];
+
+    cards.forEach(card => {
+
+        const option = document.createElement("option");
+
+        option.value = card;
+        option.textContent = card;
+
+        filterCard.appendChild(option);
+
+    });
+
+}
+
 
 /* ===============================
 TABLE
@@ -502,6 +529,45 @@ transactionsList.addEventListener("click", async e => {
     }
 });
 
+function updateOriginField() {
+
+    originSelect.innerHTML = "";
+
+    if (typeSelect.value === "receita") {
+
+        originLabel.textContent = "Origem";
+
+        originSelect.innerHTML = `
+            <option value="Salário">Salário</option>
+            <option value="Freelance">Freelance</option>
+            <option value="Investimento">Investimento</option>
+            <option value="Outros">Outros</option>
+        `;
+
+        categorySelect.style.display = "none";
+    }
+
+    else {
+
+        originLabel.textContent = "Forma de pagamento";
+
+        originSelect.innerHTML = `
+            <option value="Dinheiro">Dinheiro</option>
+            <option value="Pix">Pix</option>
+            <option value="Alelo">Alelo</option>
+            <option value="Bradesco">Bradesco</option>
+            <option value="Caixa">Caixa</option>
+            <option value="C6">C6</option>
+            <option value="Itaú">Itaú</option>
+            <option value="Nubank">Nubank</option>
+        `;
+
+        categorySelect.style.display = "block";
+
+        loadCategoriesByType("despesa");
+    }
+
+}
 
 /* ===============================
 MODAL
