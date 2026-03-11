@@ -333,6 +333,108 @@ button {
 
 /* esconder FAB no desktop */
 
+.row-updated {
+    animation: highlightUpdate 0.7s ease;
+}
+
+.card-new {
+    animation: rowInsert 0.45s ease;
+}
+
+.skeleton td {
+    position: relative;
+    overflow: hidden;
+}
+
+.skeleton td::after {
+    content: "";
+
+    position: absolute;
+    top: 0;
+    left: -150px;
+
+    width: 150px;
+    height: 100%;
+
+    background: linear-gradient(90deg,
+            transparent,
+            rgba(255, 255, 255, 0.08),
+            transparent);
+
+    animation: skeleton-loading 1.2s infinite;
+}
+
+@keyframes skeleton-loading {
+
+    0% {
+        left: -150px;
+    }
+
+    100% {
+        left: 100%;
+    }
+
+}
+
+.skeleton-card {
+    height: 70px;
+    border-radius: 12px;
+    background: #1a1f1c;
+    position: relative;
+    overflow: hidden;
+}
+
+.skeleton-card::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -150px;
+    width: 150px;
+    height: 100%;
+
+    background: linear-gradient(90deg,
+            transparent,
+            rgba(255, 255, 255, 0.08),
+            transparent);
+
+    animation: skeleton-loading 1.2s infinite;
+}
+
+@keyframes highlightUpdate {
+
+    0% {
+        background: rgba(46, 204, 113, 0.45);
+    }
+
+    100% {
+        background: transparent;
+    }
+
+}
+
+.transaction-card.updated {
+    animation: highlightUpdate 0.7s ease;
+}
+
+.row-new {
+    animation: rowInsert 0.45s ease;
+}
+
+
+@keyframes rowInsert {
+
+    0% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
 @media (min-width:769px) {
 
     #fab-add {

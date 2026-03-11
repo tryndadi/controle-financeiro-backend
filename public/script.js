@@ -34,6 +34,12 @@ if (transactionsList) {
 
 async function loadTransactions() {
 
+    transactionsList.innerHTML = `
+    <tr class="skeleton"><td colspan="6" style="height:40px"></td></tr>
+    <tr class="skeleton"><td colspan="6" style="height:40px"></td></tr>
+    <tr class="skeleton"><td colspan="6" style="height:40px"></td></tr>
+    `;
+
     const response = await fetch(`${API_URL}/transacoes`);
     const data = await response.json();
 
@@ -162,14 +168,13 @@ async function saveInlineEdit(row, id) {
     if (isMobile) {
         updateMobileCard(id);
     } else {
-        updateTransactionRow(id);
+        replaceRow(id);
     }
 
     render({
         chart: true,
         cards: true,
-        balance: true,
-        table: false
+        balance: true
     });
 }
 
@@ -480,6 +485,64 @@ function renderTable() {
     });
 
     transactionsList.appendChild(fragment);
+}
+
+function buildTransactionRow(t) {
+
+    const row = document.createElement("tr");
+    row.dataset.id = t.id;
+
+    const date = document.createElement("td");
+    date.textContent = formatDate(t.date);
+
+    const type = document.createElement("td");
+    type.textContent = t.type;
+
+    const desc = document.createElement("td");
+    desc.textContent = t.description;
+
+    const origin = document.createElement("td");
+    origin.textContent = t.origin || "-";
+
+    const amount = document.createElement("td");
+    amount.textContent = format(t.amount);
+
+    const actions = document.createElement("td");
+
+    const editBtn = document.createElement("button");
+    editBtn.className = "edit-btn";
+    editBtn.textContent = "✏";
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.className = "delete-btn";
+    deleteBtn.textContent = "🗑";
+
+    actions.appendChild(editBtn);
+    actions.appendChild(deleteBtn);
+
+    row.appendChild(date);
+    row.appendChild(type);
+    row.appendChild(desc);
+    row.appendChild(origin);
+    row.appendChild(amount);
+    row.appendChild(actions);
+
+    return row;
+}
+
+function replaceRow(id) {
+
+    const oldRow = transactionsList.querySelector(`tr[data-id="${id}"]`);
+    if (!oldRow) return;
+
+    const t = transactionsById[id];
+
+    const newRow = buildTransactionRow(t);
+
+    newRow.classList.add("row-updated");
+
+    oldRow.replaceWith(newRow);
+
 }
 
 function updateTransactionRow(id) {
@@ -881,11 +944,33 @@ document.getElementById("transaction-form").onsubmit = async function (e) {
             body: JSON.stringify(data)
         });
 
-        // recarrega para obter o novo ID
-        await loadTransactions();
+        const response = await fetch(`${API_URL}/transacoes`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        });
+
+        const newTransaction = await response.json();
     }
 
+    transactions.push({
+        id: newTransaction.id,
+        date: data.data,
+        type: data.tipo,
+        description: data.descricao,
+        amount: data.valor,
+        origin: data.origem
+    });
+
+    transactionsById[newTransaction.id] = transactions[transactions.length - 1];
+
     transactionModal.classList.remove("active");
+
+    const newRow = buildTransactionRow(transactionsById[newTransaction.id]);
+
+    newRow.classList.add("row-new");
+
+    transactionsList.prepend(newRow);
 
     this.reset();
 
