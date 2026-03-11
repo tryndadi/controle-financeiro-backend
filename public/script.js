@@ -8,8 +8,9 @@ let chartPeriod = "tudo"; // mes, ano, tudo
 let editingTransactionId = null;
 let chartDirty = true;
 let filteredCache = null;
-let transactionById = {};
+let transactionsById = {};
 let isMobile = window.innerWidth < 768;
+let chartVisible = false;
 
 const transactionsList = document.getElementById("transactions-list");
 const cardSummary = document.getElementById("card-summary-list");
@@ -92,9 +93,9 @@ async function loadCategoriesByType(tipo) {
 
 function getFilteredTransactions() {
 
-    if (filteredCache) return filteredCache;
-
-    filteredCache = applyFilters();
+    if (!filteredCache) {
+        filteredCache = applyFilters();
+    }
 
     return filteredCache;
 
@@ -143,8 +144,33 @@ async function saveInlineEdit(row, id) {
         body: JSON.stringify(data)
     });
 
-    await loadTransactions();
+    /* ATUALIZA ARRAY LOCAL */
 
+    const t = transactionsById[id];
+
+    if (t) {
+        t.description = data.descricao;
+        t.amount = data.valor;
+        t.type = data.tipo;
+        t.origin = data.origem;
+        t.date = data.data;
+    }
+
+    filteredCache = null;
+    chartDirty = true;
+
+    if (isMobile) {
+        updateMobileCard(id);
+    } else {
+        updateTransactionRow(id);
+    }
+
+    render({
+        chart: true,
+        cards: true,
+        balance: true,
+        table: false
+    });
 }
 
 function makeRowEditable(row, id) {
@@ -326,7 +352,7 @@ function render({
     if (cards) renderCardSummary();
     if (goal) renderGoal();
 
-    if (chart && chartDirty) {
+    if (chart && chartDirty && chartVisible) {
         renderChart();
         chartDirty = false;
     }
@@ -414,23 +440,62 @@ function renderTable() {
         const row = document.createElement("tr");
         row.dataset.id = t.id;
 
-        row.innerHTML = `
-        <td>${formatDate(t.date)}</td>
-        <td>${t.type}</td>
-        <td>${t.description}</td>
-        <td>${t.origin || "-"}</td>
-        <td>${format(t.amount)}</td>
-        <td>
-            <button class="edit-btn">✏</button>
-            <button class="delete-btn">🗑</button>
-        </td>
-    `;
+        const date = document.createElement("td");
+        date.textContent = formatDate(t.date);
+
+        const type = document.createElement("td");
+        type.textContent = t.type;
+
+        const desc = document.createElement("td");
+        desc.textContent = t.description;
+
+        const origin = document.createElement("td");
+        origin.textContent = t.origin || "-";
+
+        const amount = document.createElement("td");
+        amount.textContent = format(t.amount);
+
+        const actions = document.createElement("td");
+
+        const editBtn = document.createElement("button");
+        editBtn.className = "edit-btn";
+        editBtn.textContent = "✏";
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.className = "delete-btn";
+        deleteBtn.textContent = "🗑";
+
+        actions.appendChild(editBtn);
+        actions.appendChild(deleteBtn);
+
+        row.appendChild(date);
+        row.appendChild(type);
+        row.appendChild(desc);
+        row.appendChild(origin);
+        row.appendChild(amount);
+        row.appendChild(actions);
 
         fragment.appendChild(row);
 
     });
 
     transactionsList.appendChild(fragment);
+}
+
+function updateTransactionRow(id) {
+
+    const row = transactionsList.querySelector(`tr[data-id="${id}"]`);
+
+    if (!row) return;
+
+    const t = transactionsById[id];
+
+    row.children[0].textContent = formatDate(t.date);
+    row.children[1].textContent = t.type;
+    row.children[2].textContent = t.description;
+    row.children[3].textContent = t.origin || "-";
+    row.children[4].textContent = format(t.amount);
+
 }
 
 async function deleteTransaction(id) {
@@ -479,37 +544,78 @@ function renderMobileCards(filtered) {
 
     transactionsList.innerHTML = "";
 
+    const fragment = document.createDocumentFragment();
+
     filtered.forEach(t => {
 
         const card = document.createElement("div");
         card.className = "transaction-card";
+        card.dataset.id = t.id;
 
-        card.innerHTML = `
-            <div class="card-header">
-                <strong>${t.description}</strong>
-                <span class="${t.type}">
-                    ${format(t.amount)}
-                </span>
-            </div>
+        const header = document.createElement("div");
+        header.className = "card-header";
 
-            <div class="card-body">
-                <span>${t.origin}</span>
-                <span>${formatDate(t.date)}</span>
-            </div>
+        const title = document.createElement("strong");
+        title.textContent = t.description;
 
-<button onclick="editTransaction(${t.id})">
-    Editar
-</button>
+        const value = document.createElement("span");
+        value.className = t.type;
+        value.textContent = format(t.amount);
 
-<button onclick="deleteTransaction(${t.id})">
-    Excluir
-</button>
-        `;
+        header.appendChild(title);
+        header.appendChild(value);
 
-        transactionsList.appendChild(card);
+        const body = document.createElement("div");
+        body.className = "card-body";
+
+        const origin = document.createElement("span");
+        origin.textContent = t.origin;
+
+        const date = document.createElement("span");
+        date.textContent = formatDate(t.date);
+
+        body.appendChild(origin);
+        body.appendChild(date);
+
+        const editBtn = document.createElement("button");
+        editBtn.textContent = "Editar";
+        editBtn.onclick = () => editTransaction(t.id);
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.textContent = "Excluir";
+        deleteBtn.onclick = () => deleteTransaction(t.id);
+
+        card.appendChild(header);
+        card.appendChild(body);
+        card.appendChild(editBtn);
+        card.appendChild(deleteBtn);
+
+        fragment.appendChild(card);
 
     });
 
+    transactionsList.appendChild(fragment);
+
+}
+
+function updateMobileCard(id) {
+
+    const card = transactionsList.querySelector(`.transaction-card[data-id="${id}"]`);
+    if (!card) return;
+
+    const t = transactionsById[id];
+
+    const header = card.querySelector(".card-header");
+    const body = card.querySelector(".card-body");
+
+    header.querySelector("strong").textContent = t.description;
+
+    const value = header.querySelector("span");
+    value.className = t.type;
+    value.textContent = format(t.amount);
+
+    body.children[0].textContent = t.origin;
+    body.children[1].textContent = formatDate(t.date);
 }
 
 function openLimit(card) {
@@ -742,24 +848,41 @@ document.getElementById("transaction-form").onsubmit = async function (e) {
         data: $("transaction-date").value
     };
 
-    if (editingTransactionId) {
+    let editedId = editingTransactionId;
 
-        await fetch(`${API_URL}/transacoes/${editingTransactionId}`, {
+    if (editedId) {
+
+        // EDITAR TRANSAÇÃO
+        await fetch(`${API_URL}/transacoes/${editedId}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data)
         });
 
+        // atualiza objeto local
+        const t = transactionsById[editedId];
+
+        if (t) {
+            t.description = data.descricao;
+            t.amount = data.valor;
+            t.type = data.tipo;
+            t.origin = data.origem;
+            t.date = data.data;
+        }
+
         editingTransactionId = null;
 
     } else {
 
+        // NOVA TRANSAÇÃO
         await fetch(`${API_URL}/transacoes`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data)
         });
 
+        // recarrega para obter o novo ID
+        await loadTransactions();
     }
 
     transactionModal.classList.remove("active");
@@ -768,7 +891,15 @@ document.getElementById("transaction-form").onsubmit = async function (e) {
 
     updateOriginField();
 
-    await loadTransactions();
+    filteredCache = null;
+    chartDirty = true;
+
+    render({
+        chart: true,
+        cards: true,
+        balance: true,
+        table: true
+    });
 
 };
 
@@ -838,10 +969,45 @@ window.addEventListener("resize", () => {
 
 });
 
+function lazyLoadChart() {
+
+    const chartContainer = document.querySelector(".chart-container");
+
+    if (!chartContainer) return;
+
+    const observer = new IntersectionObserver(entries => {
+
+        entries.forEach(entry => {
+
+            if (entry.isIntersecting) {
+
+                chartVisible = true;
+
+                chartDirty = true;
+
+                render({
+                    chart: true
+                });
+
+                observer.disconnect();
+
+            }
+
+        });
+
+    }, {
+        threshold: 0.3
+    });
+
+    observer.observe(chartContainer);
+
+}
+
 async function init() {
 
     await loadCardLimits();
     await loadTransactions();
 
+    lazyLoadChart();
 }
 init();
