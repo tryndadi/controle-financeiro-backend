@@ -14,10 +14,6 @@ app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "../public/index.html"));
 });
 
-app.get("/transacoes", (req, res) => {
-    res.json([]);
-});
-
 app.get("/api/categorias/:tipo", async (req, res) => {
 
     const { tipo } = req.params;
@@ -32,24 +28,38 @@ app.get("/api/categorias/:tipo", async (req, res) => {
 
 app.get("/api/transacoes", async (req, res) => {
 
-    const result = await pool.query(`
-    SELECT 
-        id,
-        descricao AS description,
-        valor AS amount,
-        tipo AS type,
-        data AS date,
-        origem AS origin
-    FROM transacoes
-    ORDER BY id DESC
-    `);
+    try {
 
-    res.json(result.rows);
+        const result = await pool.query(`
+            SELECT 
+                id,
+                descricao AS description,
+                valor AS amount,
+                tipo AS type,
+                data AS date,
+                origem AS origin
+            FROM transacoes
+            ORDER BY id DESC
+        `);
+
+        res.json(result.rows);
+
+    } catch (error) {
+
+        console.error(error);
+        res.status(500).json({ error: "Erro ao buscar transações" });
+
+    }
+
 });
 
 app.post("/api/transacoes", async (req, res) => {
 
-    const { descricao, valor, tipo, origem, data } = req.body;
+    if (!descricao || !valor || !tipo || !data) {
+        return res.status(400).json({
+            error: "Dados inválidos"
+        });
+    }
 
     const result = await pool.query(
         "INSERT INTO transacoes (descricao, valor, tipo, origem, data) VALUES ($1,$2,$3,$4,$5) RETURNING *",
@@ -65,7 +75,7 @@ app.delete("/api/transacoes/:id", async (req, res) => {
 
     await pool.query("DELETE FROM transacoes WHERE id=$1", [id]);
 
-    res.json({ success: true });
+    res.status(200).json({ success: true });
 
 
 });
@@ -100,7 +110,11 @@ app.post("/api/limites", async (req, res) => {
 app.put("/api/transacoes/:id", async (req, res) => {
 
     const { id } = req.params;
-    const { descricao, valor, tipo, origem, data } = req.body;
+    if (!descricao || !valor || !tipo || !data) {
+        return res.status(400).json({
+            error: "Dados inválidos"
+        });
+    }
 
     const result = await pool.query(
         `UPDATE transacoes
