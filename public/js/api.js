@@ -15,6 +15,10 @@ const API_URL = "/api";
 export async function loadTransactions() {
 
     const response = await fetch(`${API_URL}/transacoes`);
+    if (!response.ok) {
+        throw new Error("Erro na API");
+    }
+
     const data = await response.json();
 
     transactions.splice(0);
@@ -138,6 +142,10 @@ export async function deleteTransaction(id) {
 export async function loadCardLimits() {
 
     const response = await fetch(`${API_URL}/limites`);
+    if (!response.ok) {
+        throw new Error("Erro na API");
+    }
+
     const data = await response.json();
 
     Object.keys(cardLimits).forEach(k => delete cardLimits[k]);

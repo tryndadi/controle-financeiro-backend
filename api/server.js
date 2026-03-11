@@ -46,14 +46,19 @@ app.get("/api/transacoes", async (req, res) => {
 
     } catch (error) {
 
-        console.error(error);
-        res.status(500).json({ error: "Erro ao buscar transações" });
+        console.error("Erro ao buscar transações:", error);
+
+        res.status(500).json({
+            error: "Erro ao buscar transações"
+        });
 
     }
 
 });
 
 app.post("/api/transacoes", async (req, res) => {
+
+    const { descricao, valor, tipo, origem, data } = req.body;
 
     if (!descricao || !valor || !tipo || !data) {
         return res.status(400).json({
@@ -62,11 +67,15 @@ app.post("/api/transacoes", async (req, res) => {
     }
 
     const result = await pool.query(
-        "INSERT INTO transacoes (descricao, valor, tipo, origem, data) VALUES ($1,$2,$3,$4,$5) RETURNING *",
+        `INSERT INTO transacoes
+        (descricao, valor, tipo, origem, data)
+        VALUES ($1,$2,$3,$4,$5)
+        RETURNING *`,
         [descricao, valor, tipo, origem, data]
     );
 
     res.json(result.rows[0]);
+
 });
 
 app.delete("/api/transacoes/:id", async (req, res) => {
@@ -110,6 +119,9 @@ app.post("/api/limites", async (req, res) => {
 app.put("/api/transacoes/:id", async (req, res) => {
 
     const { id } = req.params;
+
+    const { descricao, valor, tipo, origem, data } = req.body;
+
     if (!descricao || !valor || !tipo || !data) {
         return res.status(400).json({
             error: "Dados inválidos"
