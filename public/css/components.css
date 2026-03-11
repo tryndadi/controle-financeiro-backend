@@ -187,6 +187,9 @@ button {
         display: none;
     }
 
+    .modal {
+        padding: 20px;
+    }
 }
 
 /* FORM TRANSACTION GRID */
@@ -299,17 +302,8 @@ button {
     display: flex;
 }
 
-#transaction-modal form {
-    position: relative;
-
-    width: 420px;
-    max-width: 90%;
-
-    padding: 24px;
-
-    border-radius: 12px;
-
-    background: #0f172a;
+#transaction-form {
+    margin-top: 10px;
 }
 
 .modal-header {
@@ -320,12 +314,9 @@ button {
 
 
 #cancel-transaction {
-    position: absolute;
-    top: 10px;
-    right: 10px;
 
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
 
     border: none;
     border-radius: 50%;
