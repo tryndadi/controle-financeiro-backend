@@ -33,7 +33,7 @@ app.get("/api/transacoes", async (req, res) => {
                 descricao AS description,
                 valor AS amount,
                 tipo AS type,
-                data AS date,
+                data::date AS date,
                 origem AS origin
             FROM transacoes
             ORDER BY id DESC
