@@ -10,7 +10,13 @@ import { handleTableClick } from "./table.js";
 
 import { lazyLoadChart } from "./chart.js";
 
-import { updateIsMobile } from "./state.js";
+import {
+  updateIsMobile,
+  chartMode,
+  chartPeriod,
+  setChartMode,
+  setChartPeriod,
+} from "./state.js";
 
 /* =========================
    EVENTOS GLOBAIS
@@ -23,6 +29,9 @@ function initEvents() {
 
   const fabAddBtn = document.getElementById("fab-add");
 
+  const toggleMode = document.getElementById("toggle-chart-mode");
+  const togglePeriod = document.getElementById("toggle-chart-period");
+
   if (transactionsList) {
     transactionsList.addEventListener("click", handleTableClick);
   }
@@ -33,6 +42,39 @@ function initEvents() {
 
   if (fabAddBtn) {
     fabAddBtn.onclick = openTransactionModal;
+  }
+  /* =========================
+   BOTÕES DO GRÁFICO
+========================= */
+
+  if (toggleMode) {
+    toggleMode.onclick = () => {
+      const newMode = chartMode === "cartao" ? "relacao" : "cartao";
+
+      setChartMode(newMode);
+
+      toggleMode.textContent =
+        "Modo: " + (newMode === "cartao" ? "Cartão" : "Receita x Despesa");
+
+      render({ chart: true });
+    };
+  }
+
+  if (togglePeriod) {
+    togglePeriod.onclick = () => {
+      let newPeriod = "tudo";
+
+      if (chartPeriod === "tudo") newPeriod = "mes";
+      else if (chartPeriod === "mes") newPeriod = "ano";
+
+      setChartPeriod(newPeriod);
+
+      togglePeriod.textContent =
+        "Período: " +
+        (newPeriod === "mes" ? "Mês" : newPeriod === "ano" ? "Ano" : "Tudo");
+
+      render({ chart: true });
+    };
   }
 }
 

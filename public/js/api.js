@@ -26,7 +26,7 @@ export async function loadTransactions() {
   data.forEach((t) => {
     const obj = {
       id: t.id,
-      date: t.date,
+      date: t.date.split("T")[0],
       type: t.type,
       description: t.description,
       amount: Number(t.amount),

@@ -66,7 +66,16 @@ app.post("/api/transacoes", async (req, res) => {
     [descricao, valor, tipo, origem, data],
   );
 
-  res.json(result.rows[0]);
+  const row = result.rows[0];
+
+  res.json({
+    id: row.id,
+    description: row.descricao,
+    amount: row.valor,
+    type: row.tipo,
+    date: row.data,
+    origin: row.origem,
+  });
 });
 
 app.delete("/api/transacoes/:id", async (req, res) => {
@@ -123,7 +132,16 @@ app.put("/api/transacoes/:id", async (req, res) => {
     [descricao, valor, tipo, origem, data, id],
   );
 
-  res.json(result.rows[0]);
+  const row = result.rows[0];
+
+  res.json({
+    id: row.id,
+    description: row.descricao,
+    amount: row.valor,
+    type: row.tipo,
+    date: row.data,
+    origin: row.origem,
+  });
 });
 
 module.exports = app;
