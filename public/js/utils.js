@@ -32,9 +32,9 @@ export function format(value) {
 export function formatDate(dateString) {
   if (!dateString) return "-";
 
-  const date = new Date(dateString);
+  const [year, month, day] = dateString.split("T")[0].split("-");
 
-  return date.toLocaleDateString("pt-BR");
+  return `${day}/${month}/${year}`;
 }
 
 /* =========================

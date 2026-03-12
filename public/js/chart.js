@@ -29,7 +29,8 @@ export function renderChart() {
 
   if (chartPeriod === "mes") {
     filtered = filtered.filter((t) => {
-      const d = new Date(t.date + "T00:00:00");
+      const [year, month, day] = t.date.split("-");
+      const d = new Date(year, month - 1, day);
 
       return (
         d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
@@ -39,7 +40,8 @@ export function renderChart() {
 
   if (chartPeriod === "ano") {
     filtered = filtered.filter((t) => {
-      const d = new Date(t.date + "T00:00:00");
+      const [year, month, day] = t.date.split("-");
+      const d = new Date(year, month - 1, day);
 
       return d.getFullYear() === now.getFullYear();
     });
