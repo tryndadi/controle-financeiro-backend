@@ -10,487 +10,454 @@ COMPONENTS
 /* CARDS */
 
 .card {
-    background: #1a1f1c;
-    padding: 20px;
-    border-radius: 14px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  background: #1a1f1c;
+  padding: 20px;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
 }
 
 .card h3 {
-    margin-bottom: 15px;
-    color: #2ecc71;
+  margin-bottom: 15px;
+  color: #2ecc71;
 }
 
 .card:hover,
 .transaction-card:hover {
-    transform: translateY(-3px);
-    transition: 0.2s ease;
+  transform: translateY(-3px);
+  transition: 0.2s ease;
 }
 
 /* BALANCE CARD */
 
 .balance-card {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    text-align: center;
-    background: linear-gradient(135deg, #14532d, #166534);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  background: linear-gradient(135deg, #14532d, #166534);
 }
 
 .balance-card p {
-    opacity: 0.8;
+  opacity: 0.8;
 }
 
 .balance-card h2 {
-    font-size: 20px;
-    margin-top: 5px;
+  font-size: 20px;
+  margin-top: 5px;
 }
 
 /* INPUTS */
 
 input,
 select {
-    background: #0f1412;
-    border: 1px solid #2ecc71;
-    color: #e5e5e5;
-    padding: 6px 8px;
-    border-radius: 8px;
-    width: 100%;
-    font-size: 14px;
+  background: #0f1412;
+  border: 1px solid #2ecc71;
+  color: #e5e5e5;
+  padding: 6px 8px;
+  border-radius: 8px;
+  width: 100%;
+  font-size: 14px;
 }
 
 input:focus,
 select:focus {
-    outline: none;
-    border-color: #27ae60;
+  outline: none;
+  border-color: #27ae60;
 }
 
 /* BOTÕES */
 
 button {
-    padding: 6px 10px;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    font-weight: bold;
-    transition: 0.2s ease;
-    font-size: 14px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.2s ease;
+  font-size: 14px;
 }
 
 .btn-primary {
-    background: #2ecc71;
-    color: #0f1412;
+  background: #2ecc71;
+  color: #0f1412;
 }
 
 .btn-primary:hover {
-    background: #27ae60;
+  background: #27ae60;
 }
 
 .btn-secondary {
-    background: #14532d;
-    color: #e5e5e5;
+  background: #14532d;
+  color: #e5e5e5;
 }
 
 /* MODAL */
 
 .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(8px);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }
 
 .modal-overlay.active {
-    display: flex;
+  display: flex;
 }
 
 .modal {
-    width: 95%;
-    max-width: 480px;
-    background: rgba(17, 24, 39, 0.8);
-    backdrop-filter: blur(20px);
-    border-radius: 20px;
-    padding: 30px;
-    animation: fadeIn 0.3s ease;
+  width: 95%;
+  max-width: 480px;
+  background: rgba(17, 24, 39, 0.8);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 30px;
+  animation: fadeIn 0.3s ease;
 }
 
 /* PROGRESS BAR */
 
 .progress-bar {
-    width: 100%;
-    height: 18px;
-    background: #1f2b24;
-    border-radius: 10px;
-    overflow: hidden;
-    margin-top: 10px;
+  width: 100%;
+  height: 18px;
+  background: #1f2b24;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 10px;
 }
 
 #progress-fill {
-    height: 100%;
-    width: 0%;
-    transition: width 0.8s ease;
+  height: 100%;
+  width: 0%;
+  transition: width 0.8s ease;
 }
 
 /* FAB BUTTON */
 
 #fab-add {
-    position: fixed;
-    bottom: 25px;
-    right: 25px;
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
 
-    width: 60px;
-    height: 60px;
+  width: 60px;
+  height: 60px;
 
-    border-radius: 50%;
+  border-radius: 50%;
 
-    background: #2ecc71;
-    color: #0f1412;
+  background: #2ecc71;
+  color: #0f1412;
 
-    font-size: 30px;
-    font-weight: bold;
+  font-size: 30px;
+  font-weight: bold;
 
-    border: none;
-    cursor: pointer;
+  border: none;
+  cursor: pointer;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-    z-index: 999;
+  z-index: 999;
 }
 
-@media (max-width:768px) {
+@media (max-width: 768px) {
+  body {
+    padding: 12px;
+  }
 
-    body {
-        padding: 12px;
-    }
+  .top-grid,
+  .middle-grid {
+    grid-template-columns: 1fr;
+  }
 
-    .top-grid,
-    .middle-grid {
-        grid-template-columns: 1fr;
-    }
+  .filters {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
 
-    .filters {
-        grid-template-columns: 1fr;
-        gap: 12px;
-    }
+  .chart-container {
+    height: 300px;
+  }
 
-    .chart-container {
-        height: 300px;
-    }
+  thead {
+    display: none;
+  }
 
-    thead {
-        display: none;
-    }
-
-    .modal {
-        padding: 20px;
-    }
+  .modal {
+    padding: 20px;
+  }
 }
 
 /* FORM TRANSACTION GRID */
 
 .transaction-grid {
-
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
 }
 
 #transaction-description {
-
-    grid-column: span 2;
-
+  grid-column: span 2;
 }
 
 .transaction-grid button {
-
-    grid-column: span 2;
-    margin-top: 5px;
-
+  grid-column: span 2;
+  margin-top: 5px;
 }
 
 #origin-group {
-
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 /* LIMIT MODAL */
 
 .limit-modal {
+  position: fixed;
+  inset: 0;
 
-    position: fixed;
-    inset: 0;
+  background: rgba(0, 0, 0, 0.6);
 
-    background: rgba(0, 0, 0, 0.6);
+  display: none;
 
-    display: none;
+  justify-content: center;
+  align-items: center;
 
-    justify-content: center;
-    align-items: center;
-
-    z-index: 1100;
-
+  z-index: 1100;
 }
 
 .limit-modal.active {
-
-    display: flex;
-
+  display: flex;
 }
 
 .limit-modal-content {
+  background: #1f2937;
+  padding: 25px;
 
-    background: #1f2937;
-    padding: 25px;
+  border-radius: 16px;
 
-    border-radius: 16px;
-
-    width: 320px;
-
+  width: 320px;
 }
 
 .chart-header {
-
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    align-items: center;
-    gap: 10px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
 }
 
 .chart-header h3 {
-
-    text-align: center;
-
+  text-align: center;
 }
 
 #toggle-chart-mode {
-
-    justify-self: start;
-
+  justify-self: start;
 }
 
 #toggle-chart-period {
-
-    justify-self: end;
-
+  justify-self: end;
 }
 
 #transaction-modal {
-    position: fixed;
-    inset: 0;
+  position: fixed;
+  inset: 0;
 
-    display: none;
+  display: none;
 
-    align-items: center;
-    justify-content: center;
+  align-items: center;
+  justify-content: center;
 
-    background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.6);
 
-    z-index: 999;
+  z-index: 999;
 }
 
 #transaction-modal.active {
-    display: flex;
+  display: flex;
 }
 
 #transaction-form {
-    margin-top: 10px;
+  margin-top: 10px;
 }
 
 .modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-
 #cancel-transaction {
+  width: 28px;
+  height: 28px;
 
-    width: 28px;
-    height: 28px;
+  border: none;
+  border-radius: 50%;
 
-    border: none;
-    border-radius: 50%;
+  background: #ef4444;
+  color: white;
 
-    background: #ef4444;
-    color: white;
-
-    cursor: pointer;
+  cursor: pointer;
 }
 
 #cancel-transaction:hover {
-    background: #dc2626;
+  background: #dc2626;
 }
 
 /* esconder FAB no desktop */
 
 .row-updated {
-    animation: highlightUpdate 0.7s ease;
+  animation: highlightUpdate 0.7s ease;
 }
 
 .card-new {
-    animation: rowInsert 0.45s ease;
+  animation: rowInsert 0.45s ease;
 }
 
 .skeleton td {
-    position: relative;
-    overflow: hidden;
+  position: relative;
+  overflow: hidden;
 }
 
 .skeleton td::after {
-    content: "";
+  content: "";
 
-    position: absolute;
-    top: 0;
-    left: -150px;
+  position: absolute;
+  top: 0;
+  left: -150px;
 
-    width: 150px;
-    height: 100%;
+  width: 150px;
+  height: 100%;
 
-    background: linear-gradient(90deg,
-            transparent,
-            rgba(255, 255, 255, 0.08),
-            transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.08),
+    transparent
+  );
 
-    animation: skeleton-loading 1.2s infinite;
+  animation: skeleton-loading 1.2s infinite;
 }
 
 @keyframes skeleton-loading {
+  0% {
+    left: -150px;
+  }
 
-    0% {
-        left: -150px;
-    }
-
-    100% {
-        left: 100%;
-    }
-
+  100% {
+    left: 100%;
+  }
 }
 
 .skeleton-card {
-    height: 70px;
-    border-radius: 12px;
-    background: #1a1f1c;
-    position: relative;
-    overflow: hidden;
+  height: 70px;
+  border-radius: 12px;
+  background: #1a1f1c;
+  position: relative;
+  overflow: hidden;
 }
 
 .skeleton-card::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: -150px;
-    width: 150px;
-    height: 100%;
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -150px;
+  width: 150px;
+  height: 100%;
 
-    background: linear-gradient(90deg,
-            transparent,
-            rgba(255, 255, 255, 0.08),
-            transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.08),
+    transparent
+  );
 
-    animation: skeleton-loading 1.2s infinite;
+  animation: skeleton-loading 1.2s infinite;
 }
 
 .chart-skeleton {
+  width: 220px;
+  height: 220px;
 
-    width: 220px;
-    height: 220px;
+  border-radius: 50%;
 
-    border-radius: 50%;
+  margin: auto;
 
-    margin: auto;
+  background: conic-gradient(
+    #1f2b24 0% 25%,
+    #24332b 25% 50%,
+    #1f2b24 50% 75%,
+    #24332b 75% 100%
+  );
 
-    background: conic-gradient(#1f2b24 0% 25%,
-            #24332b 25% 50%,
-            #1f2b24 50% 75%,
-            #24332b 75% 100%);
+  position: relative;
 
-    position: relative;
-
-    animation: rotateSkeleton 1.6s linear infinite;
-
+  animation: rotateSkeleton 1.6s linear infinite;
 }
 
 .chart-skeleton::after {
+  content: "";
 
-    content: "";
+  position: absolute;
 
-    position: absolute;
+  top: 50%;
+  left: 50%;
 
-    top: 50%;
-    left: 50%;
+  width: 120px;
+  height: 120px;
 
-    width: 120px;
-    height: 120px;
+  transform: translate(-50%, -50%);
 
-    transform: translate(-50%, -50%);
+  border-radius: 50%;
 
-    border-radius: 50%;
-
-    background: #1a1f1c;
-
+  background: #1a1f1c;
 }
 
 @keyframes rotateSkeleton {
+  from {
+    transform: rotate(0deg);
+  }
 
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
-
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes highlightUpdate {
+  0% {
+    background: rgba(46, 204, 113, 0.45);
+  }
 
-    0% {
-        background: rgba(46, 204, 113, 0.45);
-    }
-
-    100% {
-        background: transparent;
-    }
-
+  100% {
+    background: transparent;
+  }
 }
 
 .transaction-card.updated {
-    animation: highlightUpdate 0.7s ease;
+  animation: highlightUpdate 0.7s ease;
 }
 
 .row-new {
-    animation: rowInsert 0.45s ease;
+  animation: rowInsert 0.45s ease;
 }
-
 
 @keyframes rowInsert {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
 
-    0% {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-@media (min-width:769px) {
-
-    #fab-add {
-        display: none;
-    }
-
+@media (min-width: 769px) {
+  #fab-add {
+    display: none;
+  }
 }

@@ -1,35 +1,31 @@
-@media (max-width:768px) {
+@media (max-width: 768px) {
+  body {
+    padding: 12px;
+  }
 
-    body {
-        padding: 12px;
-    }
+  .top-grid,
+  .middle-grid {
+    grid-template-columns: 1fr;
+  }
 
-    .top-grid,
-    .middle-grid {
-        grid-template-columns: 1fr;
-    }
+  .filters {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
 
-    .filters {
-        grid-template-columns: 1fr;
-        gap: 12px;
-    }
+  .chart-container {
+    height: 300px;
+  }
 
-    .chart-container {
-        height: 300px;
-    }
-
-    thead {
-        display: none;
-    }
-
+  thead {
+    display: none;
+  }
 }
 
 /* esconder FAB no desktop */
 
-@media (min-width:769px) {
-
-    #fab-add {
-        display: none;
-    }
-
+@media (min-width: 769px) {
+  #fab-add {
+    display: none;
+  }
 }

@@ -1,346 +1,251 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
 
-<head>
-    <meta charset="UTF-8">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Controle Financeiro</title>
 
-    <link rel="stylesheet" href="/css/layout.css">
-    <link rel="stylesheet" href="/css/components.css">
-    <link rel="stylesheet" href="/css/table.css">
-    <link rel="stylesheet" href="/css/mobile.css">
+    <link rel="stylesheet" href="/css/layout.css" />
+    <link rel="stylesheet" href="/css/components.css" />
+    <link rel="stylesheet" href="/css/table.css" />
+    <link rel="stylesheet" href="/css/mobile.css" />
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+  </head>
 
-</head>
-
-<body>
-
+  <body>
     <div class="container">
+      <header class="header">
+        <h1>Controle Financeiro</h1>
 
-        <header class="header">
+        <button id="open-modal" class="btn-primary" type="button">
+          + Nova Transação
+        </button>
+      </header>
 
-            <h1>Controle Financeiro</h1>
-
-            <button id="open-modal" class="btn-primary" type="button">
-                + Nova Transação
-            </button>
-
-        </header>
-
-
-
-        <div class="top-grid">
-
-            <section class="card">
-
-                <h3>🎯 Meta de Economia</h3>
-
-                <input type="number" id="goal-input" placeholder="Meta (R$)" min="0" step="0.01">
-
-                <button id="save-goal" class="btn-secondary" type="button">
-                    Salvar
-                </button>
-
-                <div class="progress-bar">
-                    <div id="progress-fill"></div>
-                </div>
-
-                <p id="goal-status"></p>
-
-            </section>
-
-
-
-            <section class="card balance-card">
-
-                <p>Saldo Atual</p>
-
-                <h2 id="saldo">R$ 0,00</h2>
-
-            </section>
-
-        </div>
-
-
-
-        <div class="middle-grid">
-
-            <section class="card">
-
-                <h3>Resumo por Cartão</h3>
-
-                <table>
-
-                    <thead>
-
-                        <tr>
-                            <th>Cartão</th>
-                            <th>Total</th>
-                            <th>Limite</th>
-                        </tr>
-
-                    </thead>
-
-                    <tbody id="card-summary-list"></tbody>
-
-                </table>
-
-            </section>
-
-
-
-            <section class="card">
-
-                <div class="chart-header">
-
-                    <button id="toggle-chart-mode" class="chart-toggle-btn" type="button">
-                        Modo: Cartão
-                    </button>
-
-                    <h3>Resumo Financeiro</h3>
-
-                    <button id="toggle-chart-period" class="chart-toggle-btn" type="button">
-                        Período: Tudo
-                    </button>
-
-                </div>
-
-
-
-                <div class="chart-container">
-
-                    <div id="chart-skeleton" class="chart-skeleton"></div>
-
-                    <canvas id="expenseChart"></canvas>
-
-                </div>
-
-            </section>
-
-        </div>
-
-
-
+      <div class="top-grid">
         <section class="card">
+          <h3>🎯 Meta de Economia</h3>
 
-            <h3>Histórico</h3>
+          <input
+            type="number"
+            id="goal-input"
+            placeholder="Meta (R$)"
+            min="0"
+            step="0.01"
+          />
 
-            <div class="filters">
+          <button id="save-goal" class="btn-secondary" type="button">
+            Salvar
+          </button>
 
-                <div class="filter-group">
+          <div class="progress-bar">
+            <div id="progress-fill"></div>
+          </div>
 
-                    <label>Tipo</label>
-
-                    <select id="filter-type">
-
-                        <option value="todos">Todos</option>
-                        <option value="receita">Receita</option>
-                        <option value="despesa">Despesa</option>
-
-                    </select>
-
-                </div>
-
-
-
-                <div class="filter-group">
-
-                    <label>Cartão</label>
-
-                    <select id="filter-card">
-
-                        <option value="todos">Todos</option>
-
-                    </select>
-
-                </div>
-
-
-
-                <div class="filter-group">
-
-                    <label>Período</label>
-
-                    <select id="filter-period">
-
-                        <option value="tudo">Tudo</option>
-                        <option value="mes">Mês Atual</option>
-                        <option value="ano">Ano Atual</option>
-
-                    </select>
-
-                </div>
-
-
-
-                <div class="filter-group">
-
-                    <label>Ordenar</label>
-
-                    <select id="filter-order">
-
-                        <option value="desc">Maior → Menor</option>
-                        <option value="asc">Menor → Maior</option>
-
-                    </select>
-
-                </div>
-
-            </div>
-
-
-
-            <div class="table-wrapper">
-
-                <table>
-
-                    <thead>
-
-                        <tr>
-                            <th>Data</th>
-                            <th>Tipo</th>
-                            <th>Descrição</th>
-                            <th>Origem</th>
-                            <th>Valor</th>
-                            <th>Ações</th>
-                        </tr>
-
-                    </thead>
-
-
-
-                    <tbody id="transactions-list">
-
-                        <tr class="skeleton">
-                            <td colspan="6" style="height:40px"></td>
-                        </tr>
-
-                        <tr class="skeleton">
-                            <td colspan="6" style="height:40px"></td>
-                        </tr>
-
-                        <tr class="skeleton">
-                            <td colspan="6" style="height:40px"></td>
-                        </tr>
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
+          <p id="goal-status"></p>
         </section>
 
+        <section class="card balance-card">
+          <p>Saldo Atual</p>
+
+          <h2 id="saldo">R$ 0,00</h2>
+        </section>
+      </div>
+
+      <div class="middle-grid">
+        <section class="card">
+          <h3>Resumo por Cartão</h3>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Cartão</th>
+                <th>Total</th>
+                <th>Limite</th>
+              </tr>
+            </thead>
+
+            <tbody id="card-summary-list"></tbody>
+          </table>
+        </section>
+
+        <section class="card">
+          <div class="chart-header">
+            <button
+              id="toggle-chart-mode"
+              class="chart-toggle-btn"
+              type="button"
+            >
+              Modo: Cartão
+            </button>
+
+            <h3>Resumo Financeiro</h3>
+
+            <button
+              id="toggle-chart-period"
+              class="chart-toggle-btn"
+              type="button"
+            >
+              Período: Tudo
+            </button>
+          </div>
+
+          <div class="chart-container">
+            <div id="chart-skeleton" class="chart-skeleton"></div>
+
+            <canvas id="expenseChart"></canvas>
+          </div>
+        </section>
+      </div>
+
+      <section class="card">
+        <h3>Histórico</h3>
+
+        <div class="filters">
+          <div class="filter-group">
+            <label>Tipo</label>
+
+            <select id="filter-type">
+              <option value="todos">Todos</option>
+              <option value="receita">Receita</option>
+              <option value="despesa">Despesa</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label>Cartão</label>
+
+            <select id="filter-card">
+              <option value="todos">Todos</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label>Período</label>
+
+            <select id="filter-period">
+              <option value="tudo">Tudo</option>
+              <option value="mes">Mês Atual</option>
+              <option value="ano">Ano Atual</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label>Ordenar</label>
+
+            <select id="filter-order">
+              <option value="desc">Maior → Menor</option>
+              <option value="asc">Menor → Maior</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Tipo</th>
+                <th>Descrição</th>
+                <th>Origem</th>
+                <th>Valor</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+
+            <tbody id="transactions-list">
+              <tr class="skeleton">
+                <td colspan="6" style="height: 40px"></td>
+              </tr>
+
+              <tr class="skeleton">
+                <td colspan="6" style="height: 40px"></td>
+              </tr>
+
+              <tr class="skeleton">
+                <td colspan="6" style="height: 40px"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
     </div>
-
-
 
     <!-- MODAL TRANSAÇÃO -->
 
     <div id="transaction-modal" class="modal-overlay">
+      <div class="modal">
+        <div class="modal-header">
+          <h3>Nova Transação</h3>
 
-        <div class="modal">
-
-            <div class="modal-header">
-
-                <h3>Nova Transação</h3>
-
-                <button type="button" id="cancel-transaction" class="btn-secondary">
-                    X
-                </button>
-
-            </div>
-
-
-
-            <form id="transaction-form" class="transaction-grid">
-
-                <input id="transaction-date" type="date" required>
-
-                <select id="transaction-type">
-
-                    <option value="receita">Receita</option>
-                    <option value="despesa">Despesa</option>
-
-                </select>
-
-
-
-                <input type="text" id="transaction-description" placeholder="Descrição" required>
-
-
-
-                <select id="transaction-category">
-
-                    <option value="">Categoria</option>
-
-                </select>
-
-
-
-                <input type="number" id="transaction-amount" placeholder="Valor" step="0.01" required>
-
-
-
-                <div id="origin-group">
-
-                    <label id="origin-label">
-                        Origem
-                    </label>
-
-                    <select id="transaction-origin"></select>
-
-                </div>
-
-
-
-                <button type="submit" class="btn-primary">
-                    Salvar Transação
-                </button>
-
-            </form>
-
+          <button type="button" id="cancel-transaction" class="btn-secondary">
+            X
+          </button>
         </div>
 
+        <form id="transaction-form" class="transaction-grid">
+          <input id="transaction-date" type="date" required />
+
+          <select id="transaction-type">
+            <option value="receita">Receita</option>
+            <option value="despesa">Despesa</option>
+          </select>
+
+          <input
+            type="text"
+            id="transaction-description"
+            placeholder="Descrição"
+            required
+          />
+
+          <select id="transaction-category">
+            <option value="">Categoria</option>
+          </select>
+
+          <input
+            type="number"
+            id="transaction-amount"
+            placeholder="Valor"
+            step="0.01"
+            required
+          />
+
+          <div id="origin-group">
+            <label id="origin-label"> Origem </label>
+
+            <select id="transaction-origin"></select>
+          </div>
+
+          <button type="submit" class="btn-primary">Salvar Transação</button>
+        </form>
+      </div>
     </div>
-
-
 
     <!-- MODAL LIMITE -->
 
     <div id="limit-modal" class="limit-modal">
+      <div class="limit-modal-content">
+        <h3>Definir Limite</h3>
 
-        <div class="limit-modal-content">
+        <p id="limit-card-name"></p>
 
-            <h3>Definir Limite</h3>
+        <input
+          type="number"
+          id="limit-input"
+          placeholder="Limite"
+          step="0.01"
+        />
 
-            <p id="limit-card-name"></p>
+        <button id="save-limit" type="button">Salvar</button>
 
-            <input type="number" id="limit-input" placeholder="Limite" step="0.01">
-
-            <button id="save-limit" type="button">
-                Salvar
-            </button>
-
-            <button id="cancel-limit" type="button">
-                Cancelar
-            </button>
-
-        </div>
-
+        <button id="cancel-limit" type="button">Cancelar</button>
+      </div>
     </div>
 
-
-
-    <button id="fab-add" type="button">
-
-    </button>
+    <button id="fab-add" type="button"></button>
     <script type="module" src="/js/main.js"></script>
-
-</body>
-
+  </body>
 </html>

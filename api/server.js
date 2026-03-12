@@ -11,26 +11,23 @@ app.use(express.json());
 app.use(express.static("public"));
 
 app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "../public/index.html"));
+  res.sendFile(path.join(__dirname, "../public/index.html"));
 });
 
 app.get("/api/categorias/:tipo", async (req, res) => {
+  const { tipo } = req.params;
 
-    const { tipo } = req.params;
+  const result = await pool.query(
+    "SELECT * FROM categorias WHERE tipo=$1 ORDER BY nome",
+    [tipo],
+  );
 
-    const result = await pool.query(
-        "SELECT * FROM categorias WHERE tipo=$1 ORDER BY nome",
-        [tipo]
-    );
-
-    res.json(result.rows);
+  res.json(result.rows);
 });
 
 app.get("/api/transacoes", async (req, res) => {
-
-    try {
-
-        const result = await pool.query(`
+  try {
+    const result = await pool.query(`
             SELECT 
                 id,
                 descricao AS description,
@@ -42,94 +39,80 @@ app.get("/api/transacoes", async (req, res) => {
             ORDER BY id DESC
         `);
 
-        res.json(result.rows);
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Erro ao buscar transações:", error);
 
-    } catch (error) {
-
-        console.error("Erro ao buscar transações:", error);
-
-        res.status(500).json({
-            error: "Erro ao buscar transações"
-        });
-
-    }
-
+    res.status(500).json({
+      error: "Erro ao buscar transações",
+    });
+  }
 });
 
 app.post("/api/transacoes", async (req, res) => {
+  const { descricao, valor, tipo, origem, data } = req.body;
 
-    const { descricao, valor, tipo, origem, data } = req.body;
+  if (!descricao || !valor || !tipo || !data) {
+    return res.status(400).json({
+      error: "Dados inválidos",
+    });
+  }
 
-    if (!descricao || !valor || !tipo || !data) {
-        return res.status(400).json({
-            error: "Dados inválidos"
-        });
-    }
-
-    const result = await pool.query(
-        `INSERT INTO transacoes
+  const result = await pool.query(
+    `INSERT INTO transacoes
         (descricao, valor, tipo, origem, data)
         VALUES ($1,$2,$3,$4,$5)
         RETURNING *`,
-        [descricao, valor, tipo, origem, data]
-    );
+    [descricao, valor, tipo, origem, data],
+  );
 
-    res.json(result.rows[0]);
-
+  res.json(result.rows[0]);
 });
 
 app.delete("/api/transacoes/:id", async (req, res) => {
+  const { id } = req.params;
 
-    const { id } = req.params;
+  await pool.query("DELETE FROM transacoes WHERE id=$1", [id]);
 
-    await pool.query("DELETE FROM transacoes WHERE id=$1", [id]);
-
-    res.status(200).json({ success: true });
-
-
+  res.status(200).json({ success: true });
 });
 // BUSCAR limites
 app.get("/api/limites", async (req, res) => {
+  const result = await pool.query("SELECT * FROM limites_cartao");
 
-    const result = await pool.query(
-        "SELECT * FROM limites_cartao"
-    );
-
-    res.json(result.rows);
-
+  res.json(result.rows);
 });
-
 
 // SALVAR ou ATUALIZAR limite
 app.post("/api/limites", async (req, res) => {
+  const { cartao, limite } = req.body;
 
-    const { cartao, limite } = req.body;
-
-    await pool.query(`
+  await pool.query(
+    `
         INSERT INTO limites_cartao (cartao, limite)
         VALUES ($1,$2)
         ON CONFLICT (cartao)
         DO UPDATE SET limite = EXCLUDED.limite
-    `, [cartao, limite]);
+    `,
+    [cartao, limite],
+  );
 
-    res.json({ success: true });
-
+  res.json({ success: true });
 });
 
 app.put("/api/transacoes/:id", async (req, res) => {
+  const { id } = req.params;
 
-    const { id } = req.params;
+  const { descricao, valor, tipo, origem, data } = req.body;
 
-    const { descricao, valor, tipo, origem, data } = req.body;
+  if (!descricao || !valor || !tipo || !data) {
+    return res.status(400).json({
+      error: "Dados inválidos",
+    });
+  }
 
-    if (!descricao || !valor || !tipo || !data) {
-        return res.status(400).json({
-            error: "Dados inválidos"
-        });
-    }
-
-    const result = await pool.query(
-        `UPDATE transacoes
+  const result = await pool.query(
+    `UPDATE transacoes
          SET descricao=$1,
              valor=$2,
              tipo=$3,
@@ -137,12 +120,10 @@ app.put("/api/transacoes/:id", async (req, res) => {
              data=$5
          WHERE id=$6
          RETURNING *`,
-        [descricao, valor, tipo, origem, data, id]
-    );
+    [descricao, valor, tipo, origem, data, id],
+  );
 
-    res.json(result.rows[0]);
-
+  res.json(result.rows[0]);
 });
-
 
 module.exports = app;

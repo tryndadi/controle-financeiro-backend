@@ -3,133 +3,96 @@
 ========================= */
 
 export const $ = (id) => {
+  const el = document.getElementById(id);
 
-    const el = document.getElementById(id);
+  if (!el) {
+    console.warn(`Elemento #${id} não encontrado`);
+  }
 
-    if (!el) {
-        console.warn(`Elemento #${id} não encontrado`);
-    }
-
-    return el;
-
+  return el;
 };
-
-
 
 /* =========================
    FORMATAÇÃO DE MOEDA
 ========================= */
 
 export function format(value) {
+  const number = Number(value) || 0;
 
-    const number = Number(value) || 0;
-
-    return number.toLocaleString("pt-BR", {
-        style: "currency",
-        currency: "BRL"
-    });
-
+  return number.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
 }
-
-
 
 /* =========================
    FORMATAÇÃO DE DATA
 ========================= */
 
 export function formatDate(dateString) {
+  if (!dateString) return "-";
 
-    if (!dateString) return "-";
+  const [year, month, day] = dateString.split("-");
 
-    const [year, month, day] =
-        dateString.split("-");
-
-    return `${day}/${month}/${year}`;
-
+  return `${day}/${month}/${year}`;
 }
-
-
 
 /* =========================
    DEBOUNCE
 ========================= */
 
 export function debounce(fn, delay = 300) {
+  let timer;
 
-    let timer;
+  return function (...args) {
+    clearTimeout(timer);
 
-    return function (...args) {
-
-        clearTimeout(timer);
-
-        timer = setTimeout(() => {
-            fn.apply(this, args);
-        }, delay);
-
-    };
-
+    timer = setTimeout(() => {
+      fn.apply(this, args);
+    }, delay);
+  };
 }
-
-
 
 /* =========================
    AGRUPAR POR CHAVE
 ========================= */
 
 export function groupBy(array, key) {
+  return array.reduce((acc, item) => {
+    const value = item[key];
 
-    return array.reduce((acc, item) => {
+    if (!acc[value]) {
+      acc[value] = [];
+    }
 
-        const value = item[key];
+    acc[value].push(item);
 
-        if (!acc[value]) {
-            acc[value] = [];
-        }
-
-        acc[value].push(item);
-
-        return acc;
-
-    }, {});
-
+    return acc;
+  }, {});
 }
-
-
 
 /* =========================
    SOMAR VALORES
 ========================= */
 
 export function sum(array, field) {
-
-    return array.reduce((total, item) => {
-
-        return total + Number(item[field] || 0);
-
-    }, 0);
-
+  return array.reduce((total, item) => {
+    return total + Number(item[field] || 0);
+  }, 0);
 }
-
-
 
 /* =========================
    DATA HOJE (LOCAL)
 ========================= */
 
 export function todayISO() {
+  const today = new Date();
 
-    const today = new Date();
+  const year = today.getFullYear();
 
-    const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
 
-    const month = String(
-        today.getMonth() + 1
-    ).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
 
-    const day = String(
-        today.getDate()
-    ).padStart(2, "0");
-
-    return `${year}-${month}-${day}`;
-
+  return `${year}-${month}-${day}`;
 }

@@ -12,46 +12,29 @@ import { lazyLoadChart } from "./chart.js";
 
 import { updateIsMobile } from "./state.js";
 
-
 /* =========================
    EVENTOS GLOBAIS
 ========================= */
 
 function initEvents() {
+  const transactionsList = document.getElementById("transactions-list");
 
-    const transactionsList =
-        document.getElementById("transactions-list");
+  const openModalBtn = document.getElementById("open-modal");
 
-    const openModalBtn =
-        document.getElementById("open-modal");
+  const fabAddBtn = document.getElementById("fab-add");
 
-    const fabAddBtn =
-        document.getElementById("fab-add");
+  if (transactionsList) {
+    transactionsList.addEventListener("click", handleTableClick);
+  }
 
-    if (transactionsList) {
+  if (openModalBtn) {
+    openModalBtn.onclick = openTransactionModal;
+  }
 
-        transactionsList.addEventListener(
-            "click",
-            handleTableClick
-        );
-
-    }
-
-    if (openModalBtn) {
-
-        openModalBtn.onclick = openTransactionModal;
-
-    }
-
-    if (fabAddBtn) {
-
-        fabAddBtn.onclick = openTransactionModal;
-
-    }
-
+  if (fabAddBtn) {
+    fabAddBtn.onclick = openTransactionModal;
+  }
 }
-
-
 
 /* =========================
    RESIZE
@@ -61,82 +44,57 @@ let resizeTimer;
 let lastWidth = window.innerWidth;
 
 function initResizeListener() {
+  window.addEventListener("resize", () => {
+    if (window.innerWidth === lastWidth) return;
 
-    window.addEventListener("resize", () => {
+    lastWidth = window.innerWidth;
 
-        if (window.innerWidth === lastWidth) return;
+    clearTimeout(resizeTimer);
 
-        lastWidth = window.innerWidth;
+    resizeTimer = setTimeout(() => {
+      updateIsMobile();
 
-        clearTimeout(resizeTimer);
-
-        resizeTimer = setTimeout(() => {
-
-            updateIsMobile();
-
-            render({
-                table: true
-            });
-
-        }, 200);
-
-    });
-
+      render({
+        table: true,
+      });
+    }, 200);
+  });
 }
-
-
 
 /* =========================
    CARREGAR DADOS
 ========================= */
 
 async function loadInitialData() {
+  await Promise.all([loadCardLimits(), loadTransactions()]);
 
-    await Promise.all([
-        loadCardLimits(),
-        loadTransactions()
-    ]);
-
-    populateCardFilter();
-
+  populateCardFilter();
 }
-
-
 
 /* =========================
    INIT APP
 ========================= */
 
 async function init() {
+  updateIsMobile();
 
-    updateIsMobile();
+  initEvents();
 
-    initEvents();
+  initFilters();
 
-    initFilters();
+  initModalEvents();
 
-    initModalEvents();
+  initResizeListener();
 
-    initResizeListener();
+  lazyLoadChart();
 
-    lazyLoadChart();
+  try {
+    await loadInitialData();
 
-    try {
-
-        await loadInitialData();
-
-        render();
-
-    }
-
-    catch (err) {
-
-        console.error("Erro ao carregar dados:", err);
-
-    }
-
+    render();
+  } catch (err) {
+    console.error("Erro ao carregar dados:", err);
+  }
 }
-
-
 
 init();

@@ -1,207 +1,140 @@
 import {
-    transactions,
-    filteredCache,
-    setFilteredCache,
-    clearFiltersCache
+  transactions,
+  filteredCache,
+  setFilteredCache,
+  clearFiltersCache,
 } from "./state.js";
 
 import { render } from "./render.js";
 import { debounce } from "./utils.js";
-
 
 /* =========================
    RETORNAR FILTRADOS
 ========================= */
 
 export function getFilteredTransactions() {
+  if (!filteredCache) {
+    setFilteredCache(applyFilters());
+  }
 
-    if (!filteredCache) {
-        setFilteredCache(applyFilters());
-    }
-
-    return filteredCache;
-
+  return filteredCache;
 }
-
-
 
 /* =========================
    APLICAR FILTROS
 ========================= */
 
 export function applyFilters() {
+  const typeFilter = document.getElementById("filter-type")?.value || "todos";
 
-    const typeFilter =
-        document.getElementById("filter-type")?.value || "todos";
+  const cardFilter = document.getElementById("filter-card")?.value || "todos";
 
-    const cardFilter =
-        document.getElementById("filter-card")?.value || "todos";
+  const periodFilter =
+    document.getElementById("filter-period")?.value || "tudo";
 
-    const periodFilter =
-        document.getElementById("filter-period")?.value || "tudo";
+  const orderFilter = document.getElementById("filter-order")?.value || "desc";
 
-    const orderFilter =
-        document.getElementById("filter-order")?.value || "desc";
+  let filtered = transactions;
 
-
-    let filtered = transactions;
-
-
-
-    /* =========================
+  /* =========================
        FILTRO TIPO
     ========================= */
 
-    if (typeFilter !== "todos") {
+  if (typeFilter !== "todos") {
+    filtered = filtered.filter((t) => t.type === typeFilter);
+  }
 
-        filtered = filtered.filter(t =>
-            t.type === typeFilter
-        );
-
-    }
-
-
-
-    /* =========================
+  /* =========================
        FILTRO CARTÃO
     ========================= */
 
-    if (cardFilter !== "todos") {
+  if (cardFilter !== "todos") {
+    filtered = filtered.filter((t) => t.origin === cardFilter);
+  }
 
-        filtered = filtered.filter(t =>
-            t.origin === cardFilter
-        );
-
-    }
-
-
-
-    /* =========================
+  /* =========================
        FILTRO PERÍODO
     ========================= */
 
-    const now = new Date();
+  const now = new Date();
 
-    if (periodFilter === "mes") {
+  if (periodFilter === "mes") {
+    filtered = filtered.filter((t) => {
+      const d = new Date(t.date);
 
-        filtered = filtered.filter(t => {
+      return (
+        d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
+      );
+    });
+  }
 
-            const d = new Date(t.date);
+  if (periodFilter === "ano") {
+    filtered = filtered.filter((t) => {
+      const d = new Date(t.date);
 
-            return (
-                d.getMonth() === now.getMonth() &&
-                d.getFullYear() === now.getFullYear()
-            );
+      return d.getFullYear() === now.getFullYear();
+    });
+  }
 
-        });
-
-    }
-
-    if (periodFilter === "ano") {
-
-        filtered = filtered.filter(t => {
-
-            const d = new Date(t.date);
-
-            return d.getFullYear() === now.getFullYear();
-
-        });
-
-    }
-
-
-
-    /* =========================
+  /* =========================
        ORDENAÇÃO
     ========================= */
 
-    filtered = [...filtered].sort((a, b) => {
+  filtered = [...filtered].sort((a, b) => {
+    return orderFilter === "asc" ? a.amount - b.amount : b.amount - a.amount;
+  });
 
-        return orderFilter === "asc"
-            ? a.amount - b.amount
-            : b.amount - a.amount;
-
-    });
-
-
-
-    return filtered;
-
+  return filtered;
 }
-
-
 
 /* =========================
    POPULAR CARTÕES
 ========================= */
 
 export function populateCardFilter() {
+  const filterCard = document.getElementById("filter-card");
 
-    const filterCard =
-        document.getElementById("filter-card");
+  if (!filterCard) return;
 
-    if (!filterCard) return;
-
-    filterCard.innerHTML = `
+  filterCard.innerHTML = `
         <option value="todos">
             Todos Cartões
         </option>
     `;
 
-    const cards = [
+  const cards = [
+    ...new Set(
+      transactions.filter((t) => t.type === "despesa").map((t) => t.origin),
+    ),
+  ];
 
-        ...new Set(
+  cards.forEach((card) => {
+    const option = document.createElement("option");
 
-            transactions
-                .filter(t => t.type === "despesa")
-                .map(t => t.origin)
+    option.value = card;
+    option.textContent = card;
 
-        )
-
-    ];
-
-    cards.forEach(card => {
-
-        const option = document.createElement("option");
-
-        option.value = card;
-        option.textContent = card;
-
-        filterCard.appendChild(option);
-
-    });
-
+    filterCard.appendChild(option);
+  });
 }
-
-
 
 /* =========================
    INIT FILTROS
 ========================= */
 
 export function initFilters() {
+  document.querySelectorAll(".filters select").forEach((select) => {
+    select.addEventListener(
+      "change",
 
-    document
-        .querySelectorAll(".filters select")
-        .forEach(select => {
+      debounce(() => {
+        clearFiltersCache();
 
-            select.addEventListener(
-
-                "change",
-
-                debounce(() => {
-
-                    clearFiltersCache();
-
-                    render({
-                        table: true,
-                        chart: true
-                    });
-
-                }, 150)
-
-            );
-
+        render({
+          table: true,
+          chart: true,
         });
-
+      }, 150),
+    );
+  });
 }

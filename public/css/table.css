@@ -6,121 +6,112 @@ TABLE
 */
 
 table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
 }
 
 thead {
-    background: #14532d;
+  background: #14532d;
 }
 
 th,
 td {
-    padding: 10px;
-    text-align: left;
+  padding: 10px;
+  text-align: left;
 }
 
 tr:nth-child(even) {
-    background: #16201b;
+  background: #16201b;
 }
 
 tr:hover {
-    background: #1f2b24;
+  background: #1f2b24;
 }
 
 /* TRANSACTION CARD (mobile) */
 
 .transaction-card {
-    background: #1e1e1e;
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 12px;
+  background: #1e1e1e;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
 
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 
-    width: 100%;
+  width: 100%;
 
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
 .card-header {
-    display: flex;
-    justify-content: space-between;
-    font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
 }
 
 .card-body {
-    display: flex;
-    justify-content: space-between;
-    font-size: 13px;
-    color: #aaa;
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #aaa;
 }
 
 /* VALORES */
 
 .negativo {
-    color: #d32f2f;
-    font-weight: bold;
+  color: #d32f2f;
+  font-weight: bold;
 }
 
 .positivo {
-    color: #2e7d32;
-    font-weight: bold;
+  color: #2e7d32;
+  font-weight: bold;
 }
 
 /* BOTÃO EXCLUIR */
 .transaction-card button,
 table button {
+  border: none;
+  padding: 6px 8px;
+  border-radius: 6px;
 
-    border: none;
-    padding: 6px 8px;
-    border-radius: 6px;
+  background: #e74c3c;
+  color: white;
 
-    background: #e74c3c;
-    color: white;
+  cursor: pointer;
 
-    cursor: pointer;
-
-    font-size: 13px;
-
+  font-size: 13px;
 }
 
 /* ENGRENAGEM LIMITE */
 
 .limit-gear {
+  background: none;
+  border: none;
 
-    background: none;
-    border: none;
+  font-size: 14px;
 
-    font-size: 14px;
+  cursor: pointer;
 
-    cursor: pointer;
+  opacity: 0.6;
 
-    opacity: 0.6;
-
-    transition: 0.2s;
-
+  transition: 0.2s;
 }
 
 .limit-gear:hover {
-
-    opacity: 1;
-
+  opacity: 1;
 }
 
 .limit-cell {
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
 }
 
 .limit-cell span {
-
-    flex: 1;
-
+  flex: 1;
 }
