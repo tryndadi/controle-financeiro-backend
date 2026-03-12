@@ -12,12 +12,12 @@
     ],
     "routes": [
         {
-            "src": "/style.css",
-            "dest": "/public/style.css"
+            "src": "/css/(.*)",
+            "dest": "/public/css/$1"
         },
         {
-            "src": "/script.js",
-            "dest": "/public/script.js"
+            "src": "/js/(.*)",
+            "dest": "/public/js/$1"
         },
         {
             "src": "/(.*)",
