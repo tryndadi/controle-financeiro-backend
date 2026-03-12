@@ -98,14 +98,11 @@ button {
 
 .btn-primary {
   background: linear-gradient(135deg, #2ecc71, #27ae60);
-
   color: #0f1412;
-
   padding: 8px 14px;
-
   font-weight: 600;
-
   box-shadow: 0 4px 10px rgba(46, 204, 113, 0.4);
+  padding: 10px 16px;
 }
 
 .btn-primary:hover {

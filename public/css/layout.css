@@ -37,13 +37,6 @@ body {
 
 /* LOGO */
 
-.logo-container {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  margin-bottom: 10px;
-}
-
 .logo {
   width: auto;
   height: 60px;
