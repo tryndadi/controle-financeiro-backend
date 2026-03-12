@@ -10,10 +10,15 @@ COMPONENTS
 /* CARDS */
 
 .card {
-  background: #1a1f1c;
-  padding: 20px;
-  border-radius: 14px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  background: linear-gradient(145deg, #161c18, #111714);
+
+  padding: 22px;
+
+  border-radius: 16px;
+
+  border: 1px solid rgba(255, 255, 255, 0.03);
+
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
 }
 
 .card h3 {
@@ -35,15 +40,26 @@ COMPONENTS
   justify-content: center;
   text-align: center;
   background: linear-gradient(135deg, #14532d, #166534);
+
+  padding: 30px;
+
+  border-radius: 16px;
+
+  box-shadow:
+    0 10px 25px rgba(0, 0, 0, 0.5),
+    inset 0 0 40px rgba(46, 204, 113, 0.15);
 }
 
 .balance-card p {
   opacity: 0.8;
+  font-size: 14px;
 }
 
 .balance-card h2 {
   font-size: 20px;
   margin-top: 5px;
+  font-weight: 700;
+  letter-spacing: 1px;
 }
 
 /* INPUTS */
@@ -62,7 +78,10 @@ select {
 input:focus,
 select:focus {
   outline: none;
-  border-color: #27ae60;
+
+  border-color: #2ecc71;
+
+  box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.15);
 }
 
 /* BOTÕES */
@@ -78,12 +97,21 @@ button {
 }
 
 .btn-primary {
-  background: #2ecc71;
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+
   color: #0f1412;
+
+  padding: 8px 14px;
+
+  font-weight: 600;
+
+  box-shadow: 0 4px 10px rgba(46, 204, 113, 0.4);
 }
 
 .btn-primary:hover {
-  background: #27ae60;
+  transform: translateY(-1px);
+
+  box-shadow: 0 6px 14px rgba(46, 204, 113, 0.5);
 }
 
 .btn-secondary {
