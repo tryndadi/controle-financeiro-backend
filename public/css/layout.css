@@ -22,9 +22,13 @@ body {
 
 .header {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
+
   margin-bottom: 30px;
+  padding-bottom: 15px;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .header h1 {
@@ -42,7 +46,7 @@ body {
 
 .logo {
   width: auto;
-  height: 90px;
+  height: 60px;
   filter: drop-shadow(0 0 10px rgba(46, 204, 113, 0.35));
 }
 
