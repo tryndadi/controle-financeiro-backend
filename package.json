@@ -18,5 +18,14 @@
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "pg": "^8.20.0"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tryndadi/controle-financeiro-backend.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tryndadi/controle-financeiro-backend/issues"
+  },
+  "homepage": "https://github.com/tryndadi/controle-financeiro-backend#readme"
 }
