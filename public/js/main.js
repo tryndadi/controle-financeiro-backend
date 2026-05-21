@@ -44,6 +44,8 @@ let appInitialized = false;
 function initEvents() {
   const transactionsList = document.getElementById("transactions-list");
 
+  const homeLogoBtn = document.getElementById("home-logo");
+
   const openModalBtn = document.getElementById("open-modal");
 
   const fabAddBtn = document.getElementById("fab-add");
@@ -59,6 +61,10 @@ function initEvents() {
 
   if (transactionsList) {
     transactionsList.addEventListener("click", handleTableClick);
+  }
+
+  if (homeLogoBtn) {
+    homeLogoBtn.onclick = showDashboardScreen;
   }
 
   if (openModalBtn) {
