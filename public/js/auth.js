@@ -111,9 +111,14 @@ export function showAppShell(user = getCurrentUser()) {
   getElement("fab-add")?.removeAttribute("hidden");
 
   const userName = getElement("user-name");
+  const userAvatar = getElement("user-avatar");
 
   if (userName && user) {
     userName.textContent = user.name;
+  }
+
+  if (userAvatar && user) {
+    userAvatar.textContent = user.name.trim().charAt(0).toUpperCase() || "C";
   }
 }
 

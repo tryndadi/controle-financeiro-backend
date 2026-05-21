@@ -18,18 +18,22 @@
   }
 
   .header-actions,
-  .user-actions {
+  .header-toolbar {
     align-items: stretch;
     flex-direction: column;
   }
 
-  .user-actions {
+  .header-toolbar,
+  .account-area {
     width: 100%;
   }
 
-  .user-name {
+  .account-area {
+    grid-template-columns: 34px minmax(0, 1fr) auto;
+  }
+
+  .account-name {
     max-width: none;
-    text-align: center;
   }
 
   thead {

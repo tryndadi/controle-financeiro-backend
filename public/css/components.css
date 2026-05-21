@@ -170,6 +170,11 @@ button {
   color: #e5e5e5;
 }
 
+.logout-button {
+  min-height: 32px;
+  padding-inline: 12px;
+}
+
 /* MODAL */
 
 .modal-overlay {

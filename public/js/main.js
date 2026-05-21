@@ -31,6 +31,8 @@ import {
   setActiveUser,
   clearActiveUser,
   resetFinanceState,
+  goal,
+  setGoal,
 } from "./state.js";
 
 let appInitialized = false;
@@ -46,6 +48,9 @@ function initEvents() {
 
   const fabAddBtn = document.getElementById("fab-add");
 
+  const goalInput = document.getElementById("goal-input");
+  const saveGoalBtn = document.getElementById("save-goal");
+
   const toggleMode = document.getElementById("toggle-chart-mode");
   const togglePeriod = document.getElementById("toggle-chart-period");
 
@@ -60,6 +65,30 @@ function initEvents() {
   if (fabAddBtn) {
     fabAddBtn.onclick = openTransactionModal;
   }
+
+  if (saveGoalBtn && goalInput) {
+    saveGoalBtn.onclick = () => {
+      setGoal(goalInput.value);
+
+      syncGoalInput();
+
+      render({
+        balance: false,
+        table: false,
+        cards: false,
+        goalRender: true,
+        chart: false,
+      });
+    };
+
+    goalInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        saveGoalBtn.click();
+      }
+    });
+  }
+
   /* =========================
    BOTÕES DO GRÁFICO
 ========================= */
@@ -92,6 +121,14 @@ function initEvents() {
 
       render({ chart: true });
     };
+  }
+}
+
+function syncGoalInput() {
+  const goalInput = document.getElementById("goal-input");
+
+  if (goalInput) {
+    goalInput.value = goal > 0 ? String(goal) : "";
   }
 }
 
@@ -172,6 +209,8 @@ async function startAuthenticatedApp(user = getCurrentUser()) {
 
     showAppShell(activeUser);
 
+    syncGoalInput();
+
     initAppOnce();
 
     activeUser = await refreshCurrentUser();
@@ -179,6 +218,8 @@ async function startAuthenticatedApp(user = getCurrentUser()) {
     setActiveUser(activeUser.id);
 
     showAppShell(activeUser);
+
+    syncGoalInput();
 
     await loadInitialData();
 
