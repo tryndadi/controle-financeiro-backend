@@ -48,6 +48,9 @@ function initEvents() {
 
   const fabAddBtn = document.getElementById("fab-add");
 
+  const openProBtn = document.getElementById("open-pro-screen");
+  const backDashboardBtn = document.getElementById("back-dashboard");
+
   const goalInput = document.getElementById("goal-input");
   const saveGoalBtn = document.getElementById("save-goal");
 
@@ -64,6 +67,14 @@ function initEvents() {
 
   if (fabAddBtn) {
     fabAddBtn.onclick = openTransactionModal;
+  }
+
+  if (openProBtn) {
+    openProBtn.onclick = showProScreen;
+  }
+
+  if (backDashboardBtn) {
+    backDashboardBtn.onclick = showDashboardScreen;
   }
 
   if (saveGoalBtn && goalInput) {
@@ -130,6 +141,18 @@ function syncGoalInput() {
   if (goalInput) {
     goalInput.value = goal > 0 ? String(goal) : "";
   }
+}
+
+function showDashboardScreen() {
+  document.getElementById("dashboard-screen")?.removeAttribute("hidden");
+  document.getElementById("pro-screen")?.setAttribute("hidden", "");
+  document.getElementById("fab-add")?.removeAttribute("hidden");
+}
+
+function showProScreen() {
+  document.getElementById("dashboard-screen")?.setAttribute("hidden", "");
+  document.getElementById("pro-screen")?.removeAttribute("hidden");
+  document.getElementById("fab-add")?.setAttribute("hidden", "");
 }
 
 /* =========================
@@ -208,6 +231,7 @@ async function startAuthenticatedApp(user = getCurrentUser()) {
     setActiveUser(activeUser.id);
 
     showAppShell(activeUser);
+    showDashboardScreen();
 
     syncGoalInput();
 

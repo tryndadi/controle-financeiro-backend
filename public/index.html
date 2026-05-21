@@ -11,6 +11,9 @@
     <link rel="stylesheet" href="/css/components.css" />
     <link rel="stylesheet" href="/css/table.css" />
     <link rel="stylesheet" href="/css/mobile.css" />
+    <link rel="icon" type="image/png" href="/img/favicon.png" />
+    <link rel="apple-touch-icon" href="/img/icon-192.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
   </head>
@@ -66,6 +69,10 @@
             />
           </div>
           <div class="header-toolbar">
+            <button id="open-pro-screen" class="btn-pro" type="button">
+              PRO
+            </button>
+
             <button id="open-modal" class="btn-primary" type="button">
               + Nova Transação
             </button>
@@ -92,6 +99,7 @@
         </div>
       </header>
 
+      <main id="dashboard-screen">
       <div class="top-grid">
         <section class="card">
           <h3>🎯 Meta de Economia</h3>
@@ -244,6 +252,68 @@
           </table>
         </div>
       </section>
+      </main>
+
+      <main id="pro-screen" class="pro-screen" hidden>
+        <section class="pro-header">
+          <div>
+            <span class="pro-kicker">Plano PRO</span>
+            <h2>Insights mensais para gastar melhor</h2>
+            <p>
+              Uma base para relatórios com IA, alertas de gastos e metas mais
+              inteligentes.
+            </p>
+          </div>
+
+          <button id="back-dashboard" class="btn-secondary" type="button">
+            Voltar
+          </button>
+        </section>
+
+        <section class="pro-grid">
+          <article class="pro-pricing">
+            <span class="pro-badge">Em breve</span>
+            <h3>PRO Mensal</h3>
+            <p class="pro-price">R$ 9,90</p>
+            <p class="pro-note">Valor sugerido para validação inicial.</p>
+
+            <button class="btn-primary" type="button" disabled>
+              Assinatura em preparação
+            </button>
+          </article>
+
+          <article class="pro-preview">
+            <h3>Exemplo de feedback</h3>
+            <p>
+              Seus gastos com transporte subiram 18% neste mês. Se reduzir
+              R$ 120,00 nessa categoria, sua meta de economia fica 9 dias mais
+              perto.
+            </p>
+          </article>
+        </section>
+
+        <section class="pro-benefit-grid">
+          <article class="pro-benefit">
+            <h3>Relatório mensal com IA</h3>
+            <p>Resumo automático do mês, maiores categorias e mudanças.</p>
+          </article>
+
+          <article class="pro-benefit">
+            <h3>Alertas inteligentes</h3>
+            <p>Detecção de gasto acima do padrão e pontos de atenção.</p>
+          </article>
+
+          <article class="pro-benefit">
+            <h3>Metas guiadas</h3>
+            <p>Sugestões práticas para antecipar metas sem cortar tudo.</p>
+          </article>
+
+          <article class="pro-benefit">
+            <h3>Exportação avançada</h3>
+            <p>Base futura para relatórios em PDF e planilhas mensais.</p>
+          </article>
+        </section>
+      </main>
     </div>
 
     <!-- MODAL TRANSAÇÃO -->

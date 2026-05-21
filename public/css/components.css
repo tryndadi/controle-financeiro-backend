@@ -27,8 +27,9 @@ COMPONENTS
 
 .auth-logo {
   display: block;
-  height: 64px;
-  width: auto;
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
   margin: 0 auto 22px;
   filter: drop-shadow(0 0 10px rgba(46, 204, 113, 0.28));
 }
@@ -170,9 +171,124 @@ button {
   color: #e5e5e5;
 }
 
+.btn-pro {
+  min-height: 38px;
+  padding-inline: 14px;
+  background: #d9f99d;
+  color: #15330f;
+  letter-spacing: 0.02em;
+  box-shadow: 0 4px 12px rgba(217, 249, 157, 0.22);
+}
+
+.btn-primary:disabled,
+.btn-secondary:disabled,
+.btn-pro:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+  transform: none;
+}
+
 .logout-button {
   min-height: 32px;
   padding-inline: 12px;
+}
+
+/* PRO */
+
+.pro-screen {
+  display: grid;
+  gap: 18px;
+}
+
+.pro-header,
+.pro-pricing,
+.pro-preview,
+.pro-benefit {
+  background: linear-gradient(145deg, #161c18, #111714);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.28);
+}
+
+.pro-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+  padding: 24px;
+}
+
+.pro-kicker,
+.pro-badge {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  min-height: 26px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: rgba(46, 204, 113, 0.16);
+  color: #86efac;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.pro-header h2 {
+  margin: 10px 0 8px;
+  color: #ffffff;
+  font-size: 1.5rem;
+}
+
+.pro-header p,
+.pro-note,
+.pro-preview p,
+.pro-benefit p {
+  color: #cbd5e1;
+  line-height: 1.5;
+}
+
+.pro-grid {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.9fr) minmax(300px, 1.1fr);
+  gap: 18px;
+}
+
+.pro-pricing,
+.pro-preview,
+.pro-benefit {
+  padding: 22px;
+}
+
+.pro-pricing {
+  display: grid;
+  gap: 12px;
+}
+
+.pro-pricing h3,
+.pro-preview h3,
+.pro-benefit h3 {
+  color: #2ecc71;
+}
+
+.pro-price {
+  color: #ffffff;
+  font-size: 2rem;
+  font-weight: 800;
+}
+
+.pro-preview {
+  border-color: rgba(217, 249, 157, 0.16);
+}
+
+.pro-preview p {
+  margin-top: 12px;
+  font-size: 1.05rem;
+}
+
+.pro-benefit-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
 }
 
 /* MODAL */

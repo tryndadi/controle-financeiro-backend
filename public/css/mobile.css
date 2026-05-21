@@ -9,8 +9,8 @@
   }
 
   .logo {
+    width: 42px;
     height: 42px;
-    max-width: 150px;
     object-fit: contain;
   }
 
@@ -42,6 +42,12 @@
     flex: 1;
     justify-content: flex-end;
     min-width: 0;
+  }
+
+  .btn-pro {
+    min-height: 34px;
+    padding-inline: 10px;
+    font-size: 0.78rem;
   }
 
   #open-modal {
@@ -79,6 +85,21 @@
 
   thead {
     display: none;
+  }
+
+  .pro-header,
+  .pro-grid,
+  .pro-benefit-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pro-header {
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  .pro-header h2 {
+    font-size: 1.25rem;
   }
 }
 
