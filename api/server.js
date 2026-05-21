@@ -28,6 +28,7 @@ function serializeUser(row) {
     id: row.id,
     name: row.nome,
     email: row.email,
+    plan: row.plano || "free",
   };
 }
 
@@ -81,7 +82,7 @@ app.post("/api/auth/register", async (req, res) => {
     const result = await pool.query(
       `INSERT INTO usuarios (nome, email, senha_hash)
        VALUES ($1, $2, $3)
-       RETURNING id, nome, email`,
+       RETURNING id, nome, email, plano`,
       [nome, email, senhaHash],
     );
 
@@ -118,7 +119,7 @@ app.post("/api/auth/login", async (req, res) => {
     }
 
     const result = await pool.query(
-      `SELECT id, nome, email, senha_hash
+      `SELECT id, nome, email, senha_hash, plano
        FROM usuarios
        WHERE email=$1`,
       [email],
@@ -152,7 +153,7 @@ app.post("/api/auth/login", async (req, res) => {
 app.get("/api/auth/me", authRequired, async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT id, nome, email
+      `SELECT id, nome, email, plano
        FROM usuarios
        WHERE id=$1`,
       [req.user.id],

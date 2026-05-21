@@ -118,6 +118,23 @@ body {
   font-weight: 700;
 }
 
+.account-plan {
+  width: fit-content;
+  margin-top: 3px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.16);
+  color: #cbd5e1;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.account-plan.is-pro {
+  background: rgba(217, 249, 157, 0.18);
+  color: #d9f99d;
+}
+
 /* GRID PRINCIPAL */
 
 .top-grid,

@@ -77,6 +77,10 @@
     font-size: 0.82rem;
   }
 
+  .account-plan {
+    display: none;
+  }
+
   .logout-button {
     min-height: 30px;
     padding-inline: 9px;

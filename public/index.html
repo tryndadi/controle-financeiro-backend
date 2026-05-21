@@ -70,7 +70,7 @@
           </div>
           <div class="header-toolbar">
             <button id="open-pro-screen" class="btn-pro" type="button">
-              PRO
+              Upgrade
             </button>
 
             <button id="open-modal" class="btn-primary" type="button">
@@ -85,6 +85,7 @@
               <span class="account-copy">
                 <span class="account-label">Conta</span>
                 <span id="user-name" class="account-name"></span>
+                <span id="user-plan" class="account-plan">Free</span>
               </span>
 
               <button
@@ -257,8 +258,10 @@
       <main id="pro-screen" class="pro-screen" hidden>
         <section class="pro-header">
           <div>
-            <span class="pro-kicker">Plano PRO</span>
-            <h2>Insights mensais para gastar melhor</h2>
+            <span class="pro-kicker" id="current-plan-label">
+              Seu plano atual: Free
+            </span>
+            <h2>Faça upgrade para receber insights mensais</h2>
             <p>
               Uma base para relatórios com IA, alertas de gastos e metas mais
               inteligentes.

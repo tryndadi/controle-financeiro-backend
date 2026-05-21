@@ -112,6 +112,9 @@ export function showAppShell(user = getCurrentUser()) {
 
   const userName = getElement("user-name");
   const userAvatar = getElement("user-avatar");
+  const userPlan = getElement("user-plan");
+  const proButton = getElement("open-pro-screen");
+  const currentPlanLabel = getElement("current-plan-label");
 
   if (userName && user) {
     userName.textContent = user.name;
@@ -119,6 +122,22 @@ export function showAppShell(user = getCurrentUser()) {
 
   if (userAvatar && user) {
     userAvatar.textContent = user.name.trim().charAt(0).toUpperCase() || "C";
+  }
+
+  const plan = user?.plan === "pro" ? "pro" : "free";
+  const planLabel = plan === "pro" ? "PRO" : "Free";
+
+  if (userPlan) {
+    userPlan.textContent = planLabel;
+    userPlan.classList.toggle("is-pro", plan === "pro");
+  }
+
+  if (proButton) {
+    proButton.textContent = plan === "pro" ? "Plano PRO" : "Upgrade";
+  }
+
+  if (currentPlanLabel) {
+    currentPlanLabel.textContent = `Seu plano atual: ${planLabel}`;
   }
 }
 
