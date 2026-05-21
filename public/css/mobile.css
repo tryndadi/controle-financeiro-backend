@@ -3,6 +3,17 @@
     padding: 12px;
   }
 
+  .header {
+    margin-bottom: 18px;
+    padding-bottom: 12px;
+  }
+
+  .logo {
+    height: 42px;
+    max-width: 150px;
+    object-fit: contain;
+  }
+
   .top-grid,
   .middle-grid {
     grid-template-columns: 1fr;
@@ -17,26 +28,66 @@
     height: 300px;
   }
 
-  .header-actions,
+  .header-actions {
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo-container {
+    min-width: 0;
+  }
+
   .header-toolbar {
-    align-items: stretch;
-    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    justify-content: flex-end;
+    min-width: 0;
   }
 
-  .header-toolbar,
-  .account-area {
-    width: 100%;
+  #open-modal {
+    display: none;
   }
 
   .account-area {
-    grid-template-columns: 34px minmax(0, 1fr) auto;
+    grid-template-columns: 28px minmax(0, 1fr) auto;
+    gap: 7px;
+    min-height: 38px;
+    max-width: 100%;
+    padding: 4px;
+  }
+
+  .account-avatar {
+    width: 28px;
+    height: 28px;
+    font-size: 0.88rem;
+  }
+
+  .account-label {
+    display: none;
   }
 
   .account-name {
-    max-width: none;
+    max-width: 96px;
+    font-size: 0.82rem;
+  }
+
+  .logout-button {
+    min-height: 30px;
+    padding-inline: 9px;
+    font-size: 0.78rem;
   }
 
   thead {
+    display: none;
+  }
+}
+
+@media (max-width: 380px) {
+  .account-area {
+    grid-template-columns: 28px auto;
+  }
+
+  .account-copy {
     display: none;
   }
 }
