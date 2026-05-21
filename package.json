@@ -6,13 +6,19 @@
   "scripts": {
     "start": "node server.js",
     "migrate": "node scripts/run-migrations.js",
-    "assign-legacy": "node scripts/assign-legacy-data.js"
+    "assign-legacy": "node scripts/assign-legacy-data.js",
+    "android:sync": "cap sync android",
+    "android:open": "cap open android",
+    "android:debug": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/android-build.ps1 debug",
+    "android:bundle": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/android-build.ps1 bundle"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@capacitor/android": "^8.3.4",
+    "@capacitor/core": "^8.3.4",
     "@vercel/analytics": "^1.6.1",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
@@ -21,7 +27,6 @@
     "jsonwebtoken": "^9.0.3",
     "pg": "^8.20.0"
   },
-  "devDependencies": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tryndadi/controle-financeiro-backend.git"
@@ -29,5 +34,9 @@
   "bugs": {
     "url": "https://github.com/tryndadi/controle-financeiro-backend/issues"
   },
-  "homepage": "https://github.com/tryndadi/controle-financeiro-backend#readme"
+  "homepage": "https://github.com/tryndadi/controle-financeiro-backend#readme",
+  "devDependencies": {
+    "@capacitor/cli": "^8.3.4",
+    "typescript": "^6.0.3"
+  }
 }

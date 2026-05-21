@@ -1,4 +1,5 @@
-const API_URL = "/api";
+const REMOTE_API_URL = "https://controle-financeiro-backend-wkzj.vercel.app/api";
+const API_URL = window.Capacitor?.isNativePlatform?.() ? REMOTE_API_URL : "/api";
 const TOKEN_KEY = "controleFinanceiroToken";
 const USER_KEY = "controleFinanceiroUser";
 
