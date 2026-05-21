@@ -5,17 +5,21 @@ import {
   clearFiltersCache,
 } from "./state.js";
 
-const API_URL = "/api";
+import { apiFetch } from "./auth.js";
+
+function ensureOk(response) {
+  if (!response.ok) {
+    throw new Error("Erro na API");
+  }
+}
 
 /* =========================
    TRANSAÇÕES
 ========================= */
 
 export async function loadTransactions() {
-  const response = await fetch(`${API_URL}/transacoes`);
-  if (!response.ok) {
-    throw new Error("Erro na API");
-  }
+  const response = await apiFetch("/transacoes");
+  ensureOk(response);
 
   const data = await response.json();
 
@@ -43,13 +47,14 @@ export async function loadTransactions() {
 ========================= */
 
 export async function createTransaction(data) {
-  const response = await fetch(`${API_URL}/transacoes`, {
+  const response = await apiFetch("/transacoes", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(data),
   });
+  ensureOk(response);
 
   const newTransaction = await response.json();
 
@@ -75,13 +80,14 @@ export async function createTransaction(data) {
 ========================= */
 
 export async function updateTransaction(id, data) {
-  await fetch(`${API_URL}/transacoes/${id}`, {
+  const response = await apiFetch(`/transacoes/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(data),
   });
+  ensureOk(response);
 
   const t = transactionsById[id];
 
@@ -101,9 +107,10 @@ export async function updateTransaction(id, data) {
 ========================= */
 
 export async function deleteTransaction(id) {
-  await fetch(`${API_URL}/transacoes/${id}`, {
+  const response = await apiFetch(`/transacoes/${id}`, {
     method: "DELETE",
   });
+  ensureOk(response);
 
   const index = transactions.findIndex((t) => Number(t.id) === Number(id));
 
@@ -121,10 +128,8 @@ export async function deleteTransaction(id) {
 ========================= */
 
 export async function loadCardLimits() {
-  const response = await fetch(`${API_URL}/limites`);
-  if (!response.ok) {
-    throw new Error("Erro na API");
-  }
+  const response = await apiFetch("/limites");
+  ensureOk(response);
 
   const data = await response.json();
 
@@ -140,7 +145,7 @@ export async function loadCardLimits() {
 ========================= */
 
 export async function saveCardLimit(cartao, limite) {
-  await fetch(`${API_URL}/limites`, {
+  const response = await apiFetch("/limites", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -150,6 +155,7 @@ export async function saveCardLimit(cartao, limite) {
       limite,
     }),
   });
+  ensureOk(response);
 
   cardLimits[cartao] = limite;
 }
@@ -159,7 +165,8 @@ export async function saveCardLimit(cartao, limite) {
 ========================= */
 
 export async function loadCategoriesByType(tipo) {
-  const response = await fetch(`${API_URL}/categorias/${tipo}`);
+  const response = await apiFetch(`/categorias/${tipo}`);
+  ensureOk(response);
 
   return await response.json();
 }

@@ -17,6 +17,21 @@
     height: 300px;
   }
 
+  .header-actions,
+  .user-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .user-actions {
+    width: 100%;
+  }
+
+  .user-name {
+    max-width: none;
+    text-align: center;
+  }
+
   thead {
     display: none;
   }

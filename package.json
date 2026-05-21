@@ -4,7 +4,9 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "migrate": "node scripts/run-migrations.js",
+    "assign-legacy": "node scripts/assign-legacy-data.js"
   },
   "keywords": [],
   "author": "",

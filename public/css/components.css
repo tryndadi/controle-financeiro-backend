@@ -9,6 +9,60 @@ COMPONENTS
 
 /* CARDS */
 
+.auth-screen {
+  min-height: calc(100vh - 40px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-card {
+  width: min(420px, 100%);
+  background: linear-gradient(145deg, #161c18, #111714);
+  padding: 28px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.38);
+}
+
+.auth-logo {
+  display: block;
+  height: 64px;
+  width: auto;
+  margin: 0 auto 22px;
+  filter: drop-shadow(0 0 10px rgba(46, 204, 113, 0.28));
+}
+
+.auth-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.auth-tabs button {
+  background: #0f1412;
+  color: #cbd5e1;
+  border: 1px solid rgba(46, 204, 113, 0.35);
+}
+
+.auth-tabs button.active {
+  background: #14532d;
+  color: #ffffff;
+}
+
+.auth-form {
+  display: grid;
+  gap: 12px;
+}
+
+.auth-error {
+  min-height: 20px;
+  margin-bottom: 10px;
+  color: #fca5a5;
+  font-size: 0.9rem;
+}
+
 .card {
   background: linear-gradient(145deg, #161c18, #111714);
 

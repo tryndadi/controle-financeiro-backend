@@ -10,13 +10,30 @@ import { handleTableClick } from "./table.js";
 
 import { lazyLoadChart } from "./chart.js";
 
+import { initExportEvents } from "./export.js";
+
+import {
+  clearSession,
+  getCurrentUser,
+  initAuthEvents,
+  isAuthenticated,
+  refreshCurrentUser,
+  showAppShell,
+  showAuthScreen,
+} from "./auth.js";
+
 import {
   updateIsMobile,
   chartMode,
   chartPeriod,
   setChartMode,
   setChartPeriod,
+  setActiveUser,
+  clearActiveUser,
+  resetFinanceState,
 } from "./state.js";
+
+let appInitialized = false;
 
 /* =========================
    EVENTOS GLOBAIS
@@ -113,16 +130,16 @@ async function loadInitialData() {
   populateCardFilter();
 }
 
-/* =========================
-   INIT APP
-========================= */
+function initAppOnce() {
+  if (appInitialized) return;
 
-async function init() {
   updateIsMobile();
 
   initEvents();
 
   initFilters();
+
+  initExportEvents();
 
   initModalEvents();
 
@@ -130,12 +147,63 @@ async function init() {
 
   lazyLoadChart();
 
+  appInitialized = true;
+}
+
+function handleLogout() {
+  clearSession();
+
+  clearActiveUser();
+
+  resetFinanceState();
+
+  showAuthScreen();
+}
+
+async function startAuthenticatedApp(user = getCurrentUser()) {
   try {
+    let activeUser = user;
+
+    if (!activeUser) {
+      throw new Error("Sessao nao encontrada");
+    }
+
+    setActiveUser(activeUser.id);
+
+    showAppShell(activeUser);
+
+    initAppOnce();
+
+    activeUser = await refreshCurrentUser();
+
+    setActiveUser(activeUser.id);
+
+    showAppShell(activeUser);
+
     await loadInitialData();
 
     render();
   } catch (err) {
-    console.error("Erro ao carregar dados:", err);
+    console.error("Erro ao iniciar sessao:", err);
+
+    handleLogout();
+  }
+}
+
+/* =========================
+   INIT APP
+========================= */
+
+async function init() {
+  initAuthEvents({
+    onAuthenticated: startAuthenticatedApp,
+    onLogout: handleLogout,
+  });
+
+  if (isAuthenticated()) {
+    await startAuthenticatedApp();
+  } else {
+    handleLogout();
   }
 }
 

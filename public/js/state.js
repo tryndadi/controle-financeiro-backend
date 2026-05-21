@@ -3,6 +3,9 @@
 ========================= */
 
 const MOBILE_BREAKPOINT = 768;
+const GOAL_KEY_PREFIX = "goal";
+
+let activeUserId = null;
 
 /* =========================
    DADOS PRINCIPAIS
@@ -18,7 +21,7 @@ export let cardLimits = {};
    META FINANCEIRA
 ========================= */
 
-export let goal = Number(localStorage.getItem("goal")) || 0;
+export let goal = 0;
 
 /* =========================
    GRÁFICO
@@ -65,7 +68,23 @@ export let isMobile = window.innerWidth < MOBILE_BREAKPOINT;
 export function setGoal(value) {
   goal = Number(value) || 0;
 
-  localStorage.setItem("goal", goal);
+  localStorage.setItem(getGoalStorageKey(), goal);
+}
+
+export function setActiveUser(userId) {
+  activeUserId = userId;
+  goal = Number(localStorage.getItem(getGoalStorageKey())) || 0;
+}
+
+export function clearActiveUser() {
+  activeUserId = null;
+  goal = 0;
+}
+
+function getGoalStorageKey() {
+  return activeUserId
+    ? `${GOAL_KEY_PREFIX}:${activeUserId}`
+    : GOAL_KEY_PREFIX;
 }
 
 /* =========================
@@ -81,6 +100,22 @@ export function setTransactions(list) {
     transactionsById[t.id] = t;
   }
 
+  clearFiltersCache();
+}
+
+export function resetFinanceState() {
+  transactions.splice(0);
+
+  Object.keys(transactionsById).forEach((key) => {
+    delete transactionsById[key];
+  });
+
+  Object.keys(cardLimits).forEach((key) => {
+    delete cardLimits[key];
+  });
+
+  clearEditingTransaction();
+  setSelectedCard(null);
   clearFiltersCache();
 }
 

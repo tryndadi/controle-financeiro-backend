@@ -8,6 +8,12 @@ import {
 import { render } from "./render.js";
 import { debounce } from "./utils.js";
 
+function parseLocalDate(dateString) {
+  const [year, month, day] = dateString.split("T")[0].split("-").map(Number);
+
+  return new Date(year, month - 1, day);
+}
+
 /* =========================
    RETORNAR FILTRADOS
 ========================= */
@@ -60,7 +66,7 @@ export function applyFilters() {
 
   if (periodFilter === "mes") {
     filtered = filtered.filter((t) => {
-      const d = new Date(t.date);
+      const d = parseLocalDate(t.date);
 
       return (
         d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
@@ -68,9 +74,29 @@ export function applyFilters() {
     });
   }
 
+  if (periodFilter === "semana") {
+    const startOfWeek = new Date(now);
+    const day = startOfWeek.getDay();
+    const diff = day === 0 ? -6 : 1 - day;
+
+    startOfWeek.setDate(startOfWeek.getDate() + diff);
+    startOfWeek.setHours(0, 0, 0, 0);
+
+    const endOfWeek = new Date(startOfWeek);
+
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
+    endOfWeek.setHours(23, 59, 59, 999);
+
+    filtered = filtered.filter((t) => {
+      const d = parseLocalDate(t.date);
+
+      return d >= startOfWeek && d <= endOfWeek;
+    });
+  }
+
   if (periodFilter === "ano") {
     filtered = filtered.filter((t) => {
-      const d = new Date(t.date);
+      const d = parseLocalDate(t.date);
 
       return d.getFullYear() === now.getFullYear();
     });
