@@ -176,6 +176,11 @@ COMPONENTS
   color: #bbf7d0;
 }
 
+.auth-form > .link-button {
+  justify-self: center;
+  text-align: center;
+}
+
 .auth-footer {
   display: flex;
   justify-content: center;
