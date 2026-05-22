@@ -60,7 +60,9 @@ async function sendPasswordResetEmail({ to, name, resetUrl }) {
     return false;
   }
 
-  const from = process.env.MAIL_FROM || "Controle Financeiro <onboarding@resend.dev>";
+  const from =
+    process.env.MAIL_FROM ||
+    "Controle Financeiro <financialcontrol@outlook.com.br>";
 
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",

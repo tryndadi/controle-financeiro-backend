@@ -36,12 +36,6 @@
     line-height: 1.4;
   }
 
-  .auth-support-panel {
-    padding: 12px;
-    margin-top: 0;
-    font-size: 0.86rem;
-  }
-
   .auth-card {
     padding: 20px;
   }
@@ -88,11 +82,6 @@
     font-size: 0.78rem;
   }
 
-  .support-button {
-    width: 34px;
-    height: 34px;
-  }
-
   #open-modal {
     display: none;
   }
@@ -137,9 +126,19 @@
   .pro-header,
   .pro-grid,
   .pro-benefit-grid,
+  .pro-support-card,
   .pro-account-card,
   .profile-form {
     grid-template-columns: 1fr;
+  }
+
+  .pro-support-card {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .support-link {
+    white-space: normal;
   }
 
   .pro-header {
