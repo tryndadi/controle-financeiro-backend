@@ -79,6 +79,34 @@ async function sendPasswordResetEmail({ to, name, resetUrl }) {
     <p>Este link expira em ${PASSWORD_RESET_MINUTES} minutos. Se você não pediu isso, ignore este email.</p>
   `;
 
+  if (process.env.RESEND_API_KEY) {
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from,
+        to,
+        subject,
+        html,
+      }),
+    });
+
+    if (!response.ok) {
+      const body = await response.text();
+      const error = new Error(`Falha ao enviar email de redefinição: ${body}`);
+      error.emailProvider = "resend";
+      error.responseCode = response.status;
+      error.response = body;
+
+      throw error;
+    }
+
+    return true;
+  }
+
   if (process.env.SMTP_USER && process.env.SMTP_PASS) {
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST || "smtp-mail.outlook.com",
@@ -106,36 +134,8 @@ async function sendPasswordResetEmail({ to, name, resetUrl }) {
     return true;
   }
 
-  if (!process.env.RESEND_API_KEY) {
-    console.info(`Link de redefinição de senha para ${to}: ${resetUrl}`);
-    return false;
-  }
-
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from,
-      to,
-      subject,
-      html,
-    }),
-  });
-
-  if (!response.ok) {
-    const body = await response.text();
-    const error = new Error(`Falha ao enviar email de redefinição: ${body}`);
-    error.emailProvider = "resend";
-    error.responseCode = response.status;
-    error.response = body;
-
-    throw error;
-  }
-
-  return true;
+  console.info(`Link de redefinição de senha para ${to}: ${resetUrl}`);
+  return false;
 }
 
 function serializeUser(row) {
