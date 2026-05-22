@@ -1,12 +1,15 @@
 const express = require("express");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
+const crypto = require("crypto");
 const pool = require("../db");
 const path = require("path");
 const { authRequired, signToken } = require("./auth");
 
 const app = express();
 const PASSWORD_SALT_ROUNDS = 12;
+const TERMS_VERSION = "2026-05-22";
+const PASSWORD_RESET_MINUTES = 30;
 
 app.use(cors());
 app.use(express.json());
@@ -23,12 +26,79 @@ function normalizeEmail(email) {
     .toLowerCase();
 }
 
+function normalizeOptionalText(value) {
+  const normalized = String(value || "").trim();
+
+  return normalized || null;
+}
+
+function normalizeCpf(value) {
+  const digits = String(value || "").replace(/\D/g, "");
+
+  return digits || null;
+}
+
+function hashResetToken(token) {
+  return crypto.createHash("sha256").update(token).digest("hex");
+}
+
+function getPublicBaseUrl(req) {
+  const configuredUrl = process.env.APP_PUBLIC_URL;
+
+  if (configuredUrl) {
+    return configuredUrl.replace(/\/$/, "");
+  }
+
+  const protocol = req.headers["x-forwarded-proto"] || req.protocol || "https";
+
+  return `${protocol}://${req.get("host")}`;
+}
+
+async function sendPasswordResetEmail({ to, name, resetUrl }) {
+  if (!process.env.RESEND_API_KEY) {
+    console.info(`Link de redefinicao de senha para ${to}: ${resetUrl}`);
+    return false;
+  }
+
+  const from = process.env.MAIL_FROM || "Controle Financeiro <onboarding@resend.dev>";
+
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from,
+      to,
+      subject: "Redefinicao de senha - Controle Financeiro",
+      html: `
+        <p>Ola${name ? `, ${name}` : ""}.</p>
+        <p>Recebemos uma solicitacao para redefinir sua senha no Controle Financeiro.</p>
+        <p><a href="${resetUrl}">Clique aqui para criar uma nova senha</a>.</p>
+        <p>Este link expira em ${PASSWORD_RESET_MINUTES} minutos. Se voce nao pediu isso, ignore este email.</p>
+      `,
+    }),
+  });
+
+  if (!response.ok) {
+    const body = await response.text();
+    throw new Error(`Falha ao enviar email de redefinicao: ${body}`);
+  }
+
+  return true;
+}
+
 function serializeUser(row) {
   return {
     id: row.id,
     name: row.nome,
     email: row.email,
+    phone: row.telefone || "",
+    hasCpf: Boolean(row.cpf),
     plan: row.plano || "free",
+    termsAccepted: Boolean(row.termos_aceitos_em),
+    termsVersion: row.termos_versao || null,
   };
 }
 
@@ -71,6 +141,8 @@ app.post("/api/auth/register", async (req, res) => {
     const nome = String(req.body.nome || "").trim();
     const email = normalizeEmail(req.body.email);
     const senha = String(req.body.senha || "");
+    const telefone = normalizeOptionalText(req.body.telefone);
+    const aceitaTermos = req.body.aceitaTermos === true;
 
     if (!nome || !email || senha.length < 6) {
       return res.status(400).json({
@@ -78,12 +150,19 @@ app.post("/api/auth/register", async (req, res) => {
       });
     }
 
+    if (!aceitaTermos) {
+      return res.status(400).json({
+        error: "E necessario aceitar os termos para criar a conta",
+      });
+    }
+
     const senhaHash = await bcrypt.hash(senha, PASSWORD_SALT_ROUNDS);
     const result = await pool.query(
-      `INSERT INTO usuarios (nome, email, senha_hash)
-       VALUES ($1, $2, $3)
-       RETURNING id, nome, email, plano`,
-      [nome, email, senhaHash],
+      `INSERT INTO usuarios
+        (nome, email, senha_hash, telefone, termos_aceitos_em, termos_versao)
+       VALUES ($1, $2, $3, $4, NOW(), $5)
+       RETURNING id, nome, email, telefone, cpf, plano, termos_aceitos_em, termos_versao`,
+      [nome, email, senhaHash, telefone, TERMS_VERSION],
     );
 
     const user = serializeUser(result.rows[0]);
@@ -111,6 +190,7 @@ app.post("/api/auth/login", async (req, res) => {
   try {
     const email = normalizeEmail(req.body.email);
     const senha = String(req.body.senha || "");
+    const aceitaTermos = req.body.aceitaTermos === true;
 
     if (!email || !senha) {
       return res.status(400).json({
@@ -119,7 +199,7 @@ app.post("/api/auth/login", async (req, res) => {
     }
 
     const result = await pool.query(
-      `SELECT id, nome, email, senha_hash, plano
+      `SELECT id, nome, email, senha_hash, telefone, cpf, plano, termos_aceitos_em, termos_versao
        FROM usuarios
        WHERE email=$1`,
       [email],
@@ -135,7 +215,21 @@ app.post("/api/auth/login", async (req, res) => {
       });
     }
 
-    const user = serializeUser(userRow);
+    let acceptedUserRow = userRow;
+
+    if (aceitaTermos) {
+      const acceptedResult = await pool.query(
+        `UPDATE usuarios
+         SET termos_aceitos_em=NOW(), termos_versao=$1
+         WHERE id=$2
+         RETURNING id, nome, email, telefone, cpf, plano, termos_aceitos_em, termos_versao`,
+        [TERMS_VERSION, userRow.id],
+      );
+
+      acceptedUserRow = acceptedResult.rows[0];
+    }
+
+    const user = serializeUser(acceptedUserRow);
 
     return res.json({
       user,
@@ -150,10 +244,131 @@ app.post("/api/auth/login", async (req, res) => {
   }
 });
 
+app.post("/api/auth/forgot-password", async (req, res) => {
+  try {
+    const email = normalizeEmail(req.body.email);
+
+    if (!email) {
+      return res.status(400).json({
+        error: "Informe o email cadastrado",
+      });
+    }
+
+    const result = await pool.query(
+      `SELECT id, nome, email
+       FROM usuarios
+       WHERE email=$1`,
+      [email],
+    );
+
+    const user = result.rows[0];
+
+    if (user) {
+      const token = crypto.randomBytes(32).toString("hex");
+      const tokenHash = hashResetToken(token);
+      const resetUrl = `${getPublicBaseUrl(req)}/?resetToken=${token}`;
+
+      await pool.query(
+        `UPDATE usuarios
+         SET reset_token_hash=$1,
+             reset_token_expires_at=NOW() + ($2 || ' minutes')::interval
+         WHERE id=$3`,
+        [tokenHash, PASSWORD_RESET_MINUTES, user.id],
+      );
+
+      await sendPasswordResetEmail({
+        to: user.email,
+        name: user.nome,
+        resetUrl,
+      });
+    }
+
+    return res.json({
+      success: true,
+      message: "Se o email existir, enviaremos as instrucoes de redefinicao.",
+    });
+  } catch (error) {
+    console.error("Erro ao solicitar redefinicao de senha:", error);
+
+    return res.status(500).json({
+      error: "Erro ao solicitar redefinicao de senha",
+    });
+  }
+});
+
+app.post("/api/auth/reset-password", async (req, res) => {
+  try {
+    const token = String(req.body.token || "");
+    const senha = String(req.body.senha || "");
+
+    if (!token || senha.length < 6) {
+      return res.status(400).json({
+        error: "Informe uma nova senha com pelo menos 6 caracteres",
+      });
+    }
+
+    const tokenHash = hashResetToken(token);
+    const senhaHash = await bcrypt.hash(senha, PASSWORD_SALT_ROUNDS);
+
+    const result = await pool.query(
+      `UPDATE usuarios
+       SET senha_hash=$1,
+           reset_token_hash=NULL,
+           reset_token_expires_at=NULL
+       WHERE reset_token_hash=$2
+         AND reset_token_expires_at > NOW()
+       RETURNING id`,
+      [senhaHash, tokenHash],
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(400).json({
+        error: "Link invalido ou expirado",
+      });
+    }
+
+    return res.json({
+      success: true,
+    });
+  } catch (error) {
+    console.error("Erro ao redefinir senha:", error);
+
+    return res.status(500).json({
+      error: "Erro ao redefinir senha",
+    });
+  }
+});
+
+app.put("/api/auth/profile", authRequired, async (req, res) => {
+  try {
+    const telefone = normalizeOptionalText(req.body.telefone);
+    const cpf = normalizeCpf(req.body.cpf);
+
+    const result = await pool.query(
+      `UPDATE usuarios
+       SET telefone=$1,
+           cpf=$2
+       WHERE id=$3
+       RETURNING id, nome, email, telefone, cpf, plano, termos_aceitos_em, termos_versao`,
+      [telefone, cpf, req.user.id],
+    );
+
+    return res.json({
+      user: serializeUser(result.rows[0]),
+    });
+  } catch (error) {
+    console.error("Erro ao atualizar perfil:", error);
+
+    return res.status(500).json({
+      error: "Erro ao atualizar dados da conta",
+    });
+  }
+});
+
 app.get("/api/auth/me", authRequired, async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT id, nome, email, plano
+      `SELECT id, nome, email, telefone, cpf, plano, termos_aceitos_em, termos_versao
        FROM usuarios
        WHERE id=$1`,
       [req.user.id],

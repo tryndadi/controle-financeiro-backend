@@ -20,8 +20,29 @@
 
   <body>
     <main id="auth-screen" class="auth-screen">
-      <section class="auth-card">
+      <section class="auth-hero" aria-label="Apresentacao">
         <img src="/img/logo-topo.png" alt="Controle Financeiro" class="auth-logo" />
+        <span class="auth-kicker">Controle Financeiro</span>
+        <h1>Organize gastos, acompanhe metas e entenda seu mes.</h1>
+        <p>
+          Uma area simples para registrar entradas, despesas, cartoes e metas
+          sem planilhas complicadas.
+        </p>
+
+        <div class="auth-support-panel">
+          <strong>Precisa de ajuda?</strong>
+          <span>Suporte para acesso, conta e transacoes.</span>
+          <a href="mailto:trindade.vt@outlook.com?subject=Suporte%20Controle%20Financeiro">
+            trindade.vt@outlook.com
+          </a>
+        </div>
+      </section>
+
+      <section class="auth-card">
+        <div class="auth-card-header">
+          <span>Area segura</span>
+          <strong>Acesse sua conta</strong>
+        </div>
 
         <div class="auth-tabs">
           <button id="show-login" class="active" type="button">Entrar</button>
@@ -31,30 +52,105 @@
         <p id="auth-error" class="auth-error" role="alert"></p>
 
         <form id="login-form" class="auth-form">
-          <input id="login-email" type="email" placeholder="Email" required />
+          <label for="login-email">Email</label>
+          <input id="login-email" type="email" autocomplete="email" required />
+
+          <label for="login-password">Senha</label>
           <input
             id="login-password"
             type="password"
-            placeholder="Senha"
+            autocomplete="current-password"
             required
           />
 
+          <label class="terms-check">
+            <input id="login-terms" type="checkbox" required />
+            <span>
+              Li e aceito os
+              <button class="link-button" data-open-terms type="button">
+                termos de uso e privacidade
+              </button>
+            </span>
+          </label>
+
           <button class="btn-primary" type="submit">Entrar</button>
+
+          <button id="show-forgot-password" class="link-button" type="button">
+            Esqueci minha senha
+          </button>
         </form>
 
         <form id="register-form" class="auth-form" hidden>
-          <input id="register-name" type="text" placeholder="Nome" required />
-          <input id="register-email" type="email" placeholder="Email" required />
+          <label for="register-name">Nome completo</label>
+          <input id="register-name" type="text" autocomplete="name" required />
+
+          <label for="register-email">Email</label>
+          <input id="register-email" type="email" autocomplete="email" required />
+
+          <label for="register-phone">Telefone (opcional)</label>
+          <input id="register-phone" type="tel" autocomplete="tel" />
+
+          <label for="register-password">Senha</label>
           <input
             id="register-password"
             type="password"
-            placeholder="Senha"
             minlength="6"
+            autocomplete="new-password"
             required
           />
 
+          <label class="terms-check">
+            <input id="register-terms" type="checkbox" required />
+            <span>
+              Li e aceito os
+              <button class="link-button" data-open-terms type="button">
+                termos de uso e privacidade
+              </button>
+            </span>
+          </label>
+
           <button class="btn-primary" type="submit">Criar conta</button>
         </form>
+
+        <form id="forgot-password-form" class="auth-form" hidden>
+          <p class="auth-help">
+            Informe seu email e enviaremos instrucoes para redefinir a senha.
+          </p>
+
+          <label for="forgot-email">Email cadastrado</label>
+          <input id="forgot-email" type="email" autocomplete="email" required />
+
+          <button class="btn-primary" type="submit">Enviar instrucoes</button>
+
+          <button class="link-button" data-auth-mode="login" type="button">
+            Voltar para login
+          </button>
+        </form>
+
+        <form id="reset-password-form" class="auth-form" hidden>
+          <p class="auth-help">Crie uma nova senha para acessar sua conta.</p>
+
+          <label for="reset-password">Nova senha</label>
+          <input
+            id="reset-password"
+            type="password"
+            minlength="6"
+            autocomplete="new-password"
+            required
+          />
+
+          <button class="btn-primary" type="submit">Salvar nova senha</button>
+        </form>
+
+        <div class="auth-footer">
+          <button class="link-button" data-open-terms type="button">
+            Termos e privacidade
+          </button>
+          <span aria-hidden="true">•</span>
+          <a href="mailto:trindade.vt@outlook.com?subject=Suporte%20Controle%20Financeiro">
+            Suporte
+          </a>
+        </div>
       </section>
     </main>
 
@@ -77,6 +173,15 @@
             <button id="open-pro-screen" class="btn-pro" type="button">
               Upgrade
             </button>
+
+            <a
+              class="support-button"
+              href="mailto:trindade.vt@outlook.com?subject=Suporte%20Controle%20Financeiro"
+              aria-label="Suporte"
+              title="Suporte"
+            >
+              ?
+            </a>
 
             <button id="open-modal" class="btn-primary" type="button">
               + Nova Transação
@@ -321,7 +426,83 @@
             <p>Base futura para relatórios em PDF e planilhas mensais.</p>
           </article>
         </section>
+
+        <section class="pro-account-card">
+          <div>
+            <span class="pro-kicker">Dados para assinatura futura</span>
+            <h3>Complete apenas quando for contratar o PRO</h3>
+            <p>
+              CPF e telefone sao dados pessoais. Por isso, eles ficam opcionais
+              enquanto o plano pago ainda nao esta ativo.
+            </p>
+          </div>
+
+          <form id="profile-form" class="profile-form">
+            <label for="profile-phone">Telefone</label>
+            <input id="profile-phone" type="tel" autocomplete="tel" />
+
+            <label for="profile-cpf">CPF</label>
+            <input
+              id="profile-cpf"
+              type="text"
+              inputmode="numeric"
+              autocomplete="off"
+              maxlength="14"
+            />
+
+            <button class="btn-secondary" type="submit">Salvar dados</button>
+            <p id="profile-status" class="profile-status" role="status"></p>
+          </form>
+        </section>
       </main>
+    </div>
+
+    <div id="terms-modal" class="modal-overlay">
+      <div class="modal terms-modal" role="dialog" aria-modal="true">
+        <div class="modal-header">
+          <h3>Termos de uso e privacidade</h3>
+
+          <button type="button" id="close-terms" class="btn-secondary">
+            X
+          </button>
+        </div>
+
+        <div class="terms-content">
+          <p>
+            O Controle Financeiro organiza informacoes inseridas pelo proprio
+            usuario para fins de acompanhamento financeiro pessoal. O app nao se
+            conecta a bancos, instituicoes financeiras, fontes oficiais de renda
+            ou contas reais.
+          </p>
+
+          <p>
+            As analises, metas, graficos e futuros relatorios com IA dependem
+            exclusivamente dos dados cadastrados pelo usuario e nao constituem
+            consultoria financeira, contabil, juridica ou recomendacao oficial
+            de investimento.
+          </p>
+
+          <p>
+            Dados como nome, email, telefone, transacoes, limites e metas podem
+            ser usados para manter a conta, autenticar acesso, operar recursos
+            do aplicativo, prestar suporte e, futuramente, liberar beneficios de
+            planos pagos.
+          </p>
+
+          <p>
+            CPF e outros dados adicionais devem ser solicitados somente quando
+            houver finalidade clara, como assinatura, faturamento, prevencao a
+            fraude ou obrigacao legal. Planos pagos podem exigir que o usuario
+            tenha capacidade legal para contratar.
+          </p>
+
+          <p>
+            Ao aceitar, o usuario declara que entende essas condicoes e pode
+            solicitar suporte, correcao ou exclusao de dados pelo canal indicado
+            no aplicativo.
+          </p>
+        </div>
+      </div>
     </div>
 
     <!-- MODAL TRANSAÇÃO -->
