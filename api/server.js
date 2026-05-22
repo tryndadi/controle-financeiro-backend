@@ -55,6 +55,18 @@ function getPublicBaseUrl(req) {
   return `${protocol}://${req.get("host")}`;
 }
 
+function serializeEmailError(error) {
+  return {
+    provider: error.emailProvider || "unknown",
+    name: error.name,
+    message: error.message,
+    code: error.code,
+    command: error.command,
+    responseCode: error.responseCode,
+    response: error.response,
+  };
+}
+
 async function sendPasswordResetEmail({ to, name, resetUrl }) {
   const from =
     process.env.MAIL_FROM ||
@@ -79,12 +91,17 @@ async function sendPasswordResetEmail({ to, name, resetUrl }) {
       },
     });
 
-    await transporter.sendMail({
-      from,
-      to,
-      subject,
-      html,
-    });
+    try {
+      await transporter.sendMail({
+        from,
+        to,
+        subject,
+        html,
+      });
+    } catch (error) {
+      error.emailProvider = "smtp";
+      throw error;
+    }
 
     return true;
   }
@@ -110,7 +127,12 @@ async function sendPasswordResetEmail({ to, name, resetUrl }) {
 
   if (!response.ok) {
     const body = await response.text();
-    throw new Error(`Falha ao enviar email de redefinição: ${body}`);
+    const error = new Error(`Falha ao enviar email de redefinição: ${body}`);
+    error.emailProvider = "resend";
+    error.responseCode = response.status;
+    error.response = body;
+
+    throw error;
   }
 
   return true;
@@ -303,11 +325,19 @@ app.post("/api/auth/forgot-password", async (req, res) => {
         [tokenHash, PASSWORD_RESET_MINUTES, user.id],
       );
 
-      await sendPasswordResetEmail({
-        to: user.email,
-        name: user.nome,
-        resetUrl,
-      });
+      try {
+        await sendPasswordResetEmail({
+          to: user.email,
+          name: user.nome,
+          resetUrl,
+        });
+      } catch (error) {
+        console.error(
+          "Falha no envio do email de redefinição:",
+          serializeEmailError(error),
+        );
+        throw error;
+      }
     }
 
     return res.json({
@@ -315,7 +345,11 @@ app.post("/api/auth/forgot-password", async (req, res) => {
       message: "Se o email existir, enviaremos as instruções de redefinição.",
     });
   } catch (error) {
-    console.error("Erro ao solicitar redefinição de senha:", error);
+    console.error("Erro ao solicitar redefinição de senha:", {
+      name: error.name,
+      message: error.message,
+      code: error.code,
+    });
 
     return res.status(500).json({
       error: "Erro ao solicitar redefinição de senha",
