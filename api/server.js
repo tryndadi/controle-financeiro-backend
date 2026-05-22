@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
+const nodemailer = require("nodemailer");
 const pool = require("../db");
 const path = require("path");
 const { authRequired, signToken } = require("./auth");
@@ -55,14 +56,43 @@ function getPublicBaseUrl(req) {
 }
 
 async function sendPasswordResetEmail({ to, name, resetUrl }) {
-  if (!process.env.RESEND_API_KEY) {
-    console.info(`Link de redefinicao de senha para ${to}: ${resetUrl}`);
-    return false;
-  }
-
   const from =
     process.env.MAIL_FROM ||
     "Controle Financeiro <financialcontrol@outlook.com.br>";
+  const subject = "Redefinição de senha - Controle Financeiro";
+  const html = `
+    <p>Olá${name ? `, ${name}` : ""}.</p>
+    <p>Recebemos uma solicitação para redefinir sua senha no Controle Financeiro.</p>
+    <p><a href="${resetUrl}">Clique aqui para criar uma nova senha</a>.</p>
+    <p>Este link expira em ${PASSWORD_RESET_MINUTES} minutos. Se você não pediu isso, ignore este email.</p>
+  `;
+
+  if (process.env.SMTP_USER && process.env.SMTP_PASS) {
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST || "smtp-mail.outlook.com",
+      port: Number(process.env.SMTP_PORT || 587),
+      secure: process.env.SMTP_SECURE === "true",
+      requireTLS: true,
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    });
+
+    await transporter.sendMail({
+      from,
+      to,
+      subject,
+      html,
+    });
+
+    return true;
+  }
+
+  if (!process.env.RESEND_API_KEY) {
+    console.info(`Link de redefinição de senha para ${to}: ${resetUrl}`);
+    return false;
+  }
 
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -73,19 +103,14 @@ async function sendPasswordResetEmail({ to, name, resetUrl }) {
     body: JSON.stringify({
       from,
       to,
-      subject: "Redefinicao de senha - Controle Financeiro",
-      html: `
-        <p>Ola${name ? `, ${name}` : ""}.</p>
-        <p>Recebemos uma solicitacao para redefinir sua senha no Controle Financeiro.</p>
-        <p><a href="${resetUrl}">Clique aqui para criar uma nova senha</a>.</p>
-        <p>Este link expira em ${PASSWORD_RESET_MINUTES} minutos. Se voce nao pediu isso, ignore este email.</p>
-      `,
+      subject,
+      html,
     }),
   });
 
   if (!response.ok) {
     const body = await response.text();
-    throw new Error(`Falha ao enviar email de redefinicao: ${body}`);
+    throw new Error(`Falha ao enviar email de redefinição: ${body}`);
   }
 
   return true;
@@ -154,7 +179,7 @@ app.post("/api/auth/register", async (req, res) => {
 
     if (!aceitaTermos) {
       return res.status(400).json({
-        error: "E necessario aceitar os termos para criar a conta",
+        error: "É necessário aceitar os termos para criar a conta",
       });
     }
 
@@ -176,14 +201,14 @@ app.post("/api/auth/register", async (req, res) => {
   } catch (error) {
     if (error.code === "23505") {
       return res.status(409).json({
-        error: "Este email ja esta cadastrado",
+        error: "Este email já está cadastrado",
       });
     }
 
-    console.error("Erro ao cadastrar usuario:", error);
+    console.error("Erro ao cadastrar usuário:", error);
 
     return res.status(500).json({
-      error: "Erro ao cadastrar usuario",
+      error: "Erro ao cadastrar usuário",
     });
   }
 });
@@ -213,7 +238,7 @@ app.post("/api/auth/login", async (req, res) => {
 
     if (!passwordMatches) {
       return res.status(401).json({
-        error: "Email ou senha invalidos",
+        error: "Email ou senha inválidos",
       });
     }
 
@@ -287,13 +312,13 @@ app.post("/api/auth/forgot-password", async (req, res) => {
 
     return res.json({
       success: true,
-      message: "Se o email existir, enviaremos as instrucoes de redefinicao.",
+      message: "Se o email existir, enviaremos as instruções de redefinição.",
     });
   } catch (error) {
-    console.error("Erro ao solicitar redefinicao de senha:", error);
+    console.error("Erro ao solicitar redefinição de senha:", error);
 
     return res.status(500).json({
-      error: "Erro ao solicitar redefinicao de senha",
+      error: "Erro ao solicitar redefinição de senha",
     });
   }
 });
@@ -325,7 +350,7 @@ app.post("/api/auth/reset-password", async (req, res) => {
 
     if (result.rowCount === 0) {
       return res.status(400).json({
-        error: "Link invalido ou expirado",
+        error: "Link inválido ou expirado",
       });
     }
 
@@ -378,7 +403,7 @@ app.get("/api/auth/me", authRequired, async (req, res) => {
 
     if (result.rowCount === 0) {
       return res.status(401).json({
-        error: "Sessao invalida ou expirada",
+        error: "Sessão inválida ou expirada",
       });
     }
 
@@ -386,10 +411,10 @@ app.get("/api/auth/me", authRequired, async (req, res) => {
       user: serializeUser(result.rows[0]),
     });
   } catch (error) {
-    console.error("Erro ao buscar usuario autenticado:", error);
+    console.error("Erro ao buscar usuário autenticado:", error);
 
     return res.status(500).json({
-      error: "Erro ao buscar usuario autenticado",
+      error: "Erro ao buscar usuário autenticado",
     });
   }
 });
@@ -425,10 +450,10 @@ app.get("/api/transacoes", authRequired, async (req, res) => {
 
     res.json(result.rows);
   } catch (error) {
-    console.error("Erro ao buscar transacoes:", error);
+    console.error("Erro ao buscar transações:", error);
 
     res.status(500).json({
-      error: "Erro ao buscar transacoes",
+      error: "Erro ao buscar transações",
     });
   }
 });
@@ -438,7 +463,7 @@ app.post("/api/transacoes", authRequired, async (req, res) => {
 
   if (!payload) {
     return res.status(400).json({
-      error: "Dados invalidos",
+      error: "Dados inválidos",
     });
   }
 
@@ -470,7 +495,7 @@ app.delete("/api/transacoes/:id", authRequired, async (req, res) => {
 
   if (result.rowCount === 0) {
     return res.status(404).json({
-      error: "Transacao nao encontrada",
+      error: "Transação não encontrada",
     });
   }
 
@@ -492,7 +517,7 @@ app.post("/api/limites", authRequired, async (req, res) => {
 
   if (!cartao || !Number.isFinite(numericLimit)) {
     return res.status(400).json({
-      error: "Dados invalidos",
+      error: "Dados inválidos",
     });
   }
 
@@ -515,7 +540,7 @@ app.put("/api/transacoes/:id", authRequired, async (req, res) => {
 
   if (!payload) {
     return res.status(400).json({
-      error: "Dados invalidos",
+      error: "Dados inválidos",
     });
   }
 
@@ -541,7 +566,7 @@ app.put("/api/transacoes/:id", authRequired, async (req, res) => {
 
   if (result.rowCount === 0) {
     return res.status(404).json({
-      error: "Transacao nao encontrada",
+      error: "Transação não encontrada",
     });
   }
 

@@ -33,9 +33,9 @@ async function parseError(response) {
   try {
     const data = await response.json();
 
-    return data.error || "Nao foi possivel concluir a acao";
+    return data.error || "Não foi possível concluir a ação";
   } catch (error) {
-    return "Nao foi possivel concluir a acao";
+    return "Não foi possível concluir a ação";
   }
 }
 
@@ -330,7 +330,7 @@ export function initAuthEvents({ onAuthenticated, onLogout }) {
       });
 
       setAuthMessage(
-        "Se o email existir, enviaremos as instrucoes de redefinicao.",
+        "Se o email existir, enviaremos as instruções de redefinição.",
         "success",
       );
     } catch (error) {
@@ -379,7 +379,7 @@ export function initAuthEvents({ onAuthenticated, onLogout }) {
       showAppShell(user);
 
       if (status) {
-        status.textContent = "Dados salvos com seguranca.";
+        status.textContent = "Dados salvos com segurança.";
       }
     } catch (error) {
       if (status) {
