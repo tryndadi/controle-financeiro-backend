@@ -87,11 +87,11 @@
   }
 
   .account-area {
-    grid-template-columns: 28px minmax(0, 1fr) auto;
+    grid-template-columns: 28px minmax(0, 1fr);
     gap: 7px;
     min-height: 38px;
-    max-width: 100%;
-    padding: 4px;
+    max-width: 148px;
+    padding: 4px 8px 4px 4px;
   }
 
   .account-avatar {
@@ -100,12 +100,8 @@
     font-size: 0.88rem;
   }
 
-  .account-label {
-    display: none;
-  }
-
   .account-name {
-    max-width: 96px;
+    max-width: 82px;
     font-size: 0.82rem;
   }
 
