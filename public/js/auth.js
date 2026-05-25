@@ -141,6 +141,7 @@ export function showAuthScreen() {
   getElement("auth-screen")?.removeAttribute("hidden");
   getElement("app-shell")?.setAttribute("hidden", "");
   getElement("fab-add")?.setAttribute("hidden", "");
+  getElement("scroll-top")?.setAttribute("hidden", "");
 }
 
 export function showAppShell(user = getCurrentUser()) {

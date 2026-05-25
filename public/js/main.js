@@ -46,9 +46,8 @@ function initEvents() {
 
   const homeLogoBtn = document.getElementById("home-logo");
 
-  const openModalBtn = document.getElementById("open-modal");
-
   const fabAddBtn = document.getElementById("fab-add");
+  const scrollTopBtn = document.getElementById("scroll-top");
 
   const openProBtn = document.getElementById("open-pro-screen");
   const backDashboardBtn = document.getElementById("back-dashboard");
@@ -67,12 +66,17 @@ function initEvents() {
     homeLogoBtn.onclick = showDashboardScreen;
   }
 
-  if (openModalBtn) {
-    openModalBtn.onclick = openTransactionModal;
-  }
-
   if (fabAddBtn) {
     fabAddBtn.onclick = openTransactionModal;
+  }
+
+  if (scrollTopBtn) {
+    scrollTopBtn.onclick = () => {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    };
   }
 
   if (openProBtn) {
@@ -153,12 +157,26 @@ function showDashboardScreen() {
   document.getElementById("dashboard-screen")?.removeAttribute("hidden");
   document.getElementById("pro-screen")?.setAttribute("hidden", "");
   document.getElementById("fab-add")?.removeAttribute("hidden");
+  syncFloatingControls();
 }
 
 function showProScreen() {
   document.getElementById("dashboard-screen")?.setAttribute("hidden", "");
   document.getElementById("pro-screen")?.removeAttribute("hidden");
   document.getElementById("fab-add")?.setAttribute("hidden", "");
+  syncFloatingControls();
+}
+
+function syncFloatingControls() {
+  const scrollTopBtn = document.getElementById("scroll-top");
+  const appShell = document.getElementById("app-shell");
+
+  if (!scrollTopBtn) return;
+
+  const appIsVisible = appShell && !appShell.hasAttribute("hidden");
+  const shouldShowTopButton = appIsVisible && window.scrollY > 320;
+
+  scrollTopBtn.toggleAttribute("hidden", !shouldShowTopButton);
 }
 
 /* =========================
@@ -186,6 +204,10 @@ function initResizeListener() {
   });
 }
 
+function initScrollListener() {
+  window.addEventListener("scroll", syncFloatingControls, { passive: true });
+}
+
 /* =========================
    CARREGAR DADOS
 ========================= */
@@ -210,6 +232,8 @@ function initAppOnce() {
   initModalEvents();
 
   initResizeListener();
+
+  initScrollListener();
 
   lazyLoadChart();
 

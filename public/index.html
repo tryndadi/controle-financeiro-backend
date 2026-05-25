@@ -170,14 +170,14 @@
               alt="Controle Financeiro"
               class="logo"
             />
+            <span class="brand-copy">
+              <span class="brand-name">Controle Financeiro</span>
+              <span class="brand-context">Painel pessoal</span>
+            </span>
           </button>
           <div class="header-toolbar">
             <button id="open-pro-screen" class="btn-pro" type="button">
               Upgrade
-            </button>
-
-            <button id="open-modal" class="btn-primary" type="button">
-              + Nova Transação
             </button>
 
             <div class="account-area" aria-label="Conta do usuário">
@@ -590,7 +590,25 @@
       </div>
     </div>
 
-    <button id="fab-add" type="button" hidden>+</button>
+    <button
+      id="scroll-top"
+      class="floating-action floating-action-secondary"
+      type="button"
+      aria-label="Voltar ao topo"
+      hidden
+    >
+      ↑
+    </button>
+
+    <button
+      id="fab-add"
+      class="floating-action floating-action-primary"
+      type="button"
+      aria-label="Nova transação"
+      hidden
+    >
+      +
+    </button>
     <script type="module" src="/js/main.js"></script>
   </body>
 </html>

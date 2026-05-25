@@ -46,6 +46,10 @@
     object-fit: contain;
   }
 
+  .brand-copy {
+    display: none;
+  }
+
   .top-grid,
   .middle-grid {
     grid-template-columns: 1fr;
@@ -80,10 +84,6 @@
     min-height: 34px;
     padding-inline: 10px;
     font-size: 0.78rem;
-  }
-
-  #open-modal {
-    display: none;
   }
 
   .account-area {
@@ -158,14 +158,6 @@
   }
 
   .account-copy {
-    display: none;
-  }
-}
-
-/* esconder FAB no desktop */
-
-@media (min-width: 769px) {
-  #fab-add {
     display: none;
   }
 }

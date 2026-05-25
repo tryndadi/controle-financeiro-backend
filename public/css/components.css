@@ -552,32 +552,47 @@ button {
   transition: width 0.8s ease;
 }
 
-/* FAB BUTTON */
-
-#fab-add {
+.floating-action {
   position: fixed;
-  bottom: 25px;
-  right: 25px;
-
-  width: 60px;
-  height: 60px;
-
+  right: max(24px, env(safe-area-inset-right));
+  width: 58px;
+  height: 58px;
   border-radius: 50%;
-
-  background: #2ecc71;
-  color: #0f1412;
-
-  font-size: 30px;
   font-weight: bold;
-
   border: none;
   cursor: pointer;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   z-index: 999;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.38);
+}
+
+.floating-action-primary {
+  bottom: max(24px, env(safe-area-inset-bottom));
+  background: #2ecc71;
+  color: #0f1412;
+  font-size: 32px;
+}
+
+.floating-action-secondary {
+  bottom: calc(max(24px, env(safe-area-inset-bottom)) + 72px);
+  width: 44px;
+  height: 44px;
+  right: max(31px, env(safe-area-inset-right));
+  background: rgba(20, 83, 45, 0.94);
+  color: #e5e5e5;
+  border: 1px solid rgba(134, 239, 172, 0.26);
+  font-size: 20px;
+}
+
+.floating-action:hover {
+  transform: translateY(-2px);
+}
+
+.floating-action:focus-visible {
+  outline: 2px solid #d9f99d;
+  outline-offset: 4px;
 }
 
 @media (max-width: 768px) {
@@ -724,8 +739,6 @@ button {
   background: #dc2626;
 }
 
-/* esconder FAB no desktop */
-
 .row-updated {
   animation: highlightUpdate 0.7s ease;
 }
@@ -870,11 +883,5 @@ button {
   100% {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-
-@media (min-width: 769px) {
-  #fab-add {
-    display: none;
   }
 }
