@@ -11,8 +11,148 @@ const app = express();
 const PASSWORD_SALT_ROUNDS = 12;
 const TERMS_VERSION = "2026-05-22";
 const PASSWORD_RESET_MINUTES = 30;
+const MIN_PASSWORD_LENGTH = 8;
 
-app.use(cors());
+const DEFAULT_ALLOWED_ORIGINS = [
+  "https://controle-financeiro-backend-wkzj.vercel.app",
+  "http://localhost:3000",
+  "http://127.0.0.1:3000",
+  "capacitor://localhost",
+  "ionic://localhost",
+];
+
+const authRateLimitStore = new Map();
+
+function getAllowedOrigins() {
+  const extraOrigins = String(process.env.APP_ALLOWED_ORIGINS || "")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+
+  return new Set([...DEFAULT_ALLOWED_ORIGINS, ...extraOrigins]);
+}
+
+function isAllowedOrigin(origin) {
+  if (!origin) return true;
+
+  if (/^http:\/\/(localhost|127\.0\.0\.1):\d+$/.test(origin)) {
+    return true;
+  }
+
+  return getAllowedOrigins().has(origin);
+}
+
+function getClientIp(req) {
+  const forwardedFor = String(req.headers["x-forwarded-for"] || "");
+
+  return forwardedFor.split(",")[0].trim() || req.ip || "unknown";
+}
+
+function createRateLimiter({ keyPrefix, windowMs, max, message }) {
+  return (req, res, next) => {
+    const now = Date.now();
+    const key = `${keyPrefix}:${getClientIp(req)}`;
+    const current = authRateLimitStore.get(key);
+
+    if (authRateLimitStore.size > 5000) {
+      for (const [storedKey, value] of authRateLimitStore.entries()) {
+        if (value.resetAt <= now) {
+          authRateLimitStore.delete(storedKey);
+        }
+      }
+    }
+
+    if (!current || current.resetAt <= now) {
+      authRateLimitStore.set(key, {
+        count: 1,
+        resetAt: now + windowMs,
+      });
+
+      return next();
+    }
+
+    if (current.count >= max) {
+      const retryAfterSeconds = Math.ceil((current.resetAt - now) / 1000);
+
+      res.setHeader("Retry-After", String(retryAfterSeconds));
+
+      return res.status(429).json({
+        error: message,
+      });
+    }
+
+    current.count += 1;
+    authRateLimitStore.set(key, current);
+
+    return next();
+  };
+}
+
+const registerRateLimit = createRateLimiter({
+  keyPrefix: "auth-register",
+  windowMs: 60 * 60 * 1000,
+  max: 8,
+  message: "Muitas tentativas de cadastro. Tente novamente mais tarde.",
+});
+
+const loginRateLimit = createRateLimiter({
+  keyPrefix: "auth-login",
+  windowMs: 15 * 60 * 1000,
+  max: 12,
+  message: "Muitas tentativas de login. Tente novamente em alguns minutos.",
+});
+
+const forgotPasswordRateLimit = createRateLimiter({
+  keyPrefix: "auth-forgot-password",
+  windowMs: 60 * 60 * 1000,
+  max: 5,
+  message:
+    "Muitas solicitações de redefinição. Aguarde alguns minutos e tente novamente.",
+});
+
+const resetPasswordRateLimit = createRateLimiter({
+  keyPrefix: "auth-reset-password",
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: "Muitas tentativas de redefinição. Tente novamente em alguns minutos.",
+});
+
+app.disable("x-powered-by");
+
+app.use((req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  res.setHeader(
+    "Permissions-Policy",
+    "camera=(), microphone=(), geolocation=()",
+  );
+  res.setHeader(
+    "Content-Security-Policy",
+    [
+      "default-src 'self'",
+      "script-src 'self' https://cdn.jsdelivr.net",
+      "style-src 'self' 'unsafe-inline'",
+      "img-src 'self' data: https:",
+      "connect-src 'self' https://controle-financeiro-backend-wkzj.vercel.app",
+      "font-src 'self' data:",
+      "object-src 'none'",
+      "base-uri 'self'",
+      "frame-ancestors 'none'",
+      "form-action 'self'",
+    ].join("; "),
+  );
+
+  next();
+});
+
+app.use(
+  cors({
+    origin(origin, callback) {
+      callback(null, isAllowedOrigin(origin));
+    },
+  }),
+);
 app.use(express.json());
 
 app.use(express.static(path.join(__dirname, "../public")));
@@ -189,6 +329,7 @@ function serializeUser(row) {
     plan: row.plano || "free",
     termsAccepted: Boolean(row.termos_aceitos_em),
     termsVersion: row.termos_versao || null,
+    sessionVersion: Number(row.session_version || 0),
   };
 }
 
@@ -226,7 +367,7 @@ function validateTransactionPayload(body) {
   };
 }
 
-app.post("/api/auth/register", async (req, res) => {
+app.post("/api/auth/register", registerRateLimit, async (req, res) => {
   try {
     const nome = String(req.body.nome || "").trim();
     const email = normalizeEmail(req.body.email);
@@ -234,9 +375,9 @@ app.post("/api/auth/register", async (req, res) => {
     const telefone = normalizeOptionalText(req.body.telefone);
     const aceitaTermos = req.body.aceitaTermos === true;
 
-    if (!nome || !email || senha.length < 6) {
+    if (!nome || !email || senha.length < MIN_PASSWORD_LENGTH) {
       return res.status(400).json({
-        error: "Informe nome, email e uma senha com pelo menos 6 caracteres",
+        error: `Informe nome, email e uma senha com pelo menos ${MIN_PASSWORD_LENGTH} caracteres`,
       });
     }
 
@@ -251,7 +392,7 @@ app.post("/api/auth/register", async (req, res) => {
       `INSERT INTO usuarios
         (nome, email, senha_hash, telefone, termos_aceitos_em, termos_versao)
        VALUES ($1, $2, $3, $4, NOW(), $5)
-       RETURNING id, nome, email, telefone, cpf, plano, termos_aceitos_em, termos_versao`,
+       RETURNING id, nome, email, telefone, cpf, plano, termos_aceitos_em, termos_versao, session_version`,
       [nome, email, senhaHash, telefone, TERMS_VERSION],
     );
 
@@ -276,7 +417,7 @@ app.post("/api/auth/register", async (req, res) => {
   }
 });
 
-app.post("/api/auth/login", async (req, res) => {
+app.post("/api/auth/login", loginRateLimit, async (req, res) => {
   try {
     const email = normalizeEmail(req.body.email);
     const senha = String(req.body.senha || "");
@@ -289,7 +430,7 @@ app.post("/api/auth/login", async (req, res) => {
     }
 
     const result = await pool.query(
-      `SELECT id, nome, email, senha_hash, telefone, cpf, plano, termos_aceitos_em, termos_versao
+      `SELECT id, nome, email, senha_hash, telefone, cpf, plano, termos_aceitos_em, termos_versao, session_version
        FROM usuarios
        WHERE email=$1`,
       [email],
@@ -312,7 +453,7 @@ app.post("/api/auth/login", async (req, res) => {
         `UPDATE usuarios
          SET termos_aceitos_em=NOW(), termos_versao=$1
          WHERE id=$2
-         RETURNING id, nome, email, telefone, cpf, plano, termos_aceitos_em, termos_versao`,
+         RETURNING id, nome, email, telefone, cpf, plano, termos_aceitos_em, termos_versao, session_version`,
         [TERMS_VERSION, userRow.id],
       );
 
@@ -334,80 +475,88 @@ app.post("/api/auth/login", async (req, res) => {
   }
 });
 
-app.post("/api/auth/forgot-password", async (req, res) => {
-  try {
-    const email = normalizeEmail(req.body.email);
+app.post(
+  "/api/auth/forgot-password",
+  forgotPasswordRateLimit,
+  async (req, res) => {
+    try {
+      const email = normalizeEmail(req.body.email);
 
-    if (!email) {
-      return res.status(400).json({
-        error: "Informe o email cadastrado",
-      });
-    }
+      if (!email) {
+        return res.status(400).json({
+          error: "Informe o email cadastrado",
+        });
+      }
 
-    const result = await pool.query(
-      `SELECT id, nome, email
+      const result = await pool.query(
+        `SELECT id, nome, email
        FROM usuarios
        WHERE email=$1`,
-      [email],
-    );
+        [email],
+      );
 
-    const user = result.rows[0];
+      const user = result.rows[0];
 
-    if (user) {
-      const token = crypto.randomBytes(32).toString("hex");
-      const tokenHash = hashResetToken(token);
-      const publicBaseUrl = getPublicBaseUrl(req);
-      const resetUrl = `${publicBaseUrl}/?resetToken=${token}`;
+      if (user) {
+        const token = crypto.randomBytes(32).toString("hex");
+        const tokenHash = hashResetToken(token);
+        const publicBaseUrl = getPublicBaseUrl(req);
+        const resetUrl = `${publicBaseUrl}/?resetToken=${token}`;
 
-      await pool.query(
-        `UPDATE usuarios
+        await pool.query(
+          `UPDATE usuarios
          SET reset_token_hash=$1,
              reset_token_expires_at=NOW() + ($2 || ' minutes')::interval
          WHERE id=$3`,
-        [tokenHash, PASSWORD_RESET_MINUTES, user.id],
-      );
-
-      try {
-        await sendPasswordResetEmail({
-          to: user.email,
-          name: user.nome,
-          resetUrl,
-          publicBaseUrl,
-        });
-      } catch (error) {
-        console.error(
-          "Falha no envio do email de redefinição:",
-          serializeEmailError(error),
+          [tokenHash, PASSWORD_RESET_MINUTES, user.id],
         );
-        throw error;
+
+        try {
+          await sendPasswordResetEmail({
+            to: user.email,
+            name: user.nome,
+            resetUrl,
+            publicBaseUrl,
+          });
+        } catch (error) {
+          console.error(
+            "Falha no envio do email de redefinição:",
+            serializeEmailError(error),
+          );
+          throw error;
+        }
       }
+
+      return res.json({
+        success: true,
+        message:
+          "Se o email existir, enviaremos as instruções de redefinição.",
+      });
+    } catch (error) {
+      console.error("Erro ao solicitar redefinição de senha:", {
+        name: error.name,
+        message: error.message,
+        code: error.code,
+      });
+
+      return res.status(500).json({
+        error: "Erro ao solicitar redefinição de senha",
+      });
     }
+  },
+);
 
-    return res.json({
-      success: true,
-      message: "Se o email existir, enviaremos as instruções de redefinição.",
-    });
-  } catch (error) {
-    console.error("Erro ao solicitar redefinição de senha:", {
-      name: error.name,
-      message: error.message,
-      code: error.code,
-    });
-
-    return res.status(500).json({
-      error: "Erro ao solicitar redefinição de senha",
-    });
-  }
-});
-
-app.post("/api/auth/reset-password", async (req, res) => {
-  try {
+app.post(
+  "/api/auth/reset-password",
+  resetPasswordRateLimit,
+  async (req, res) => {
+    try {
     const token = String(req.body.token || "");
     const senha = String(req.body.senha || "");
 
-    if (!token || senha.length < 6) {
+    if (!token || senha.length < MIN_PASSWORD_LENGTH) {
       return res.status(400).json({
-        error: "Informe uma nova senha com pelo menos 6 caracteres",
+        error: `Informe uma nova senha com pelo menos ${MIN_PASSWORD_LENGTH} caracteres`,
       });
     }
 
@@ -418,7 +567,8 @@ app.post("/api/auth/reset-password", async (req, res) => {
       `UPDATE usuarios
        SET senha_hash=$1,
            reset_token_hash=NULL,
-           reset_token_expires_at=NULL
+           reset_token_expires_at=NULL,
+           session_version=COALESCE(session_version, 0) + 1
        WHERE reset_token_hash=$2
          AND reset_token_expires_at > NOW()
        RETURNING id`,
@@ -434,14 +584,15 @@ app.post("/api/auth/reset-password", async (req, res) => {
     return res.json({
       success: true,
     });
-  } catch (error) {
-    console.error("Erro ao redefinir senha:", error);
+    } catch (error) {
+      console.error("Erro ao redefinir senha:", error);
 
-    return res.status(500).json({
-      error: "Erro ao redefinir senha",
-    });
-  }
-});
+      return res.status(500).json({
+        error: "Erro ao redefinir senha",
+      });
+    }
+  },
+);
 
 app.put("/api/auth/profile", authRequired, async (req, res) => {
   try {
@@ -453,7 +604,7 @@ app.put("/api/auth/profile", authRequired, async (req, res) => {
        SET telefone=$1,
            cpf=$2
        WHERE id=$3
-       RETURNING id, nome, email, telefone, cpf, plano, termos_aceitos_em, termos_versao`,
+       RETURNING id, nome, email, telefone, cpf, plano, termos_aceitos_em, termos_versao, session_version`,
       [telefone, cpf, req.user.id],
     );
 
@@ -472,7 +623,7 @@ app.put("/api/auth/profile", authRequired, async (req, res) => {
 app.get("/api/auth/me", authRequired, async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT id, nome, email, telefone, cpf, plano, termos_aceitos_em, termos_versao
+      `SELECT id, nome, email, telefone, cpf, plano, termos_aceitos_em, termos_versao, session_version
        FROM usuarios
        WHERE id=$1`,
       [req.user.id],
