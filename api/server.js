@@ -67,16 +67,57 @@ function serializeEmailError(error) {
   };
 }
 
-async function sendPasswordResetEmail({ to, name, resetUrl }) {
+function escapeHtml(value) {
+  return String(value || "").replace(/[&<>"']/g, (char) => {
+    const entities = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;",
+    };
+
+    return entities[char];
+  });
+}
+
+function getEmailLogoUrl(publicBaseUrl) {
+  return (
+    process.env.EMAIL_LOGO_URL ||
+    `${publicBaseUrl.replace(/\/$/, "")}/img/logo-email.png`
+  );
+}
+
+async function sendPasswordResetEmail({ to, name, resetUrl, publicBaseUrl }) {
   const from =
     process.env.MAIL_FROM ||
     "Controle Financeiro <financialcontrol@outlook.com.br>";
   const subject = "Redefinição de senha - Controle Financeiro";
+  const safeName = escapeHtml(name);
+  const safeResetUrl = escapeHtml(resetUrl);
+  const logoUrl = escapeHtml(getEmailLogoUrl(publicBaseUrl));
   const html = `
-    <p>Olá${name ? `, ${name}` : ""}.</p>
-    <p>Recebemos uma solicitação para redefinir sua senha no Controle Financeiro.</p>
-    <p><a href="${resetUrl}">Clique aqui para criar uma nova senha</a>.</p>
-    <p>Este link expira em ${PASSWORD_RESET_MINUTES} minutos. Se você não pediu isso, ignore este email.</p>
+    <div style="margin:0;padding:24px;background:#f4f7f5;font-family:Arial,Helvetica,sans-serif;color:#17211c;">
+      <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:560px;margin:0 auto;background:#ffffff;border:1px solid #dce7df;border-radius:18px;overflow:hidden;">
+        <tr>
+          <td style="padding:24px 24px 10px;text-align:center;">
+            <img src="${logoUrl}" alt="Controle Financeiro" width="76" height="76" style="display:inline-block;border-radius:18px;">
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:0 24px 24px;">
+            <h1 style="margin:0 0 14px;font-size:22px;line-height:1.25;color:#14532d;text-align:center;">Redefinição de senha</h1>
+            <p style="margin:0 0 12px;font-size:15px;line-height:1.55;">Olá${safeName ? `, ${safeName}` : ""}.</p>
+            <p style="margin:0 0 16px;font-size:15px;line-height:1.55;">Recebemos uma solicitação para redefinir sua senha no Controle Financeiro.</p>
+            <p style="margin:0 0 18px;text-align:center;">
+              <a href="${safeResetUrl}" style="display:inline-block;background:#2ecc71;color:#0f1412;text-decoration:none;font-weight:700;border-radius:10px;padding:12px 18px;">Criar nova senha</a>
+            </p>
+            <p style="margin:0 0 16px;font-size:13px;line-height:1.55;color:#52635a;">Este link expira em ${PASSWORD_RESET_MINUTES} minutos. Se você não pediu isso, ignore este email.</p>
+            <p style="margin:0;font-size:12px;line-height:1.55;color:#6b7c73;border-top:1px solid #dce7df;padding-top:14px;">Nunca compartilhe sua senha, códigos ou links de recuperação. Em caso de dúvida, fale com o suporte: <a href="mailto:financialcontrol@outlook.com.br" style="color:#15803d;text-decoration:none;">financialcontrol@outlook.com.br</a>.</p>
+          </td>
+        </tr>
+      </table>
+    </div>
   `;
 
   if (process.env.RESEND_API_KEY) {
@@ -315,7 +356,8 @@ app.post("/api/auth/forgot-password", async (req, res) => {
     if (user) {
       const token = crypto.randomBytes(32).toString("hex");
       const tokenHash = hashResetToken(token);
-      const resetUrl = `${getPublicBaseUrl(req)}/?resetToken=${token}`;
+      const publicBaseUrl = getPublicBaseUrl(req);
+      const resetUrl = `${publicBaseUrl}/?resetToken=${token}`;
 
       await pool.query(
         `UPDATE usuarios
@@ -330,6 +372,7 @@ app.post("/api/auth/forgot-password", async (req, res) => {
           to: user.email,
           name: user.nome,
           resetUrl,
+          publicBaseUrl,
         });
       } catch (error) {
         console.error(
