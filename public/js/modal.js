@@ -33,6 +33,7 @@ const typeSelect = $("transaction-type");
 const originSelect = $("transaction-origin");
 const originLabel = $("origin-label");
 const categorySelect = $("transaction-category");
+const categoryField = $("category-field");
 
 /* =========================
    ABRIR MODAL NOVA TRANSAÇÃO
@@ -150,7 +151,7 @@ export async function updateOriginField() {
             <option value="Outros">Outros</option>
         `;
 
-    if (categorySelect) categorySelect.style.display = "none";
+    if (categoryField) categoryField.hidden = true;
   } else if (typeSelect.value === "despesa") {
     originLabel.textContent = "Forma de pagamento";
 
@@ -165,8 +166,8 @@ export async function updateOriginField() {
             <option value="Nubank">Nubank</option>
         `;
 
-    if (categorySelect) {
-      categorySelect.style.display = "block";
+    if (categorySelect && categoryField) {
+      categoryField.hidden = false;
 
       const categories = await loadCategoriesByType("despesa");
 

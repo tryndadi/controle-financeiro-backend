@@ -532,35 +532,49 @@
         </div>
 
         <form id="transaction-form" class="transaction-grid">
-          <input id="transaction-date" type="date" required />
+          <div class="form-field">
+            <label for="transaction-date">Data</label>
+            <input id="transaction-date" type="date" required />
+          </div>
 
-          <select id="transaction-type">
-            <option value="receita">Receita</option>
-            <option value="despesa">Despesa</option>
-          </select>
+          <div class="form-field">
+            <label for="transaction-type">Tipo</label>
+            <select id="transaction-type">
+              <option value="receita">Receita</option>
+              <option value="despesa">Despesa</option>
+            </select>
+          </div>
 
-          <input
-            type="text"
-            id="transaction-description"
-            placeholder="Descrição"
-            required
-          />
+          <div class="form-field form-field-full">
+            <label for="transaction-description">Descrição</label>
+            <input
+              type="text"
+              id="transaction-description"
+              placeholder="Ex.: Mercado, salário, aluguel"
+              required
+            />
+          </div>
 
-          <select id="transaction-category">
-            <option value="">Categoria</option>
-          </select>
+          <div id="category-field" class="form-field">
+            <label for="transaction-category">Categoria</label>
+            <select id="transaction-category">
+              <option value="">Categoria</option>
+            </select>
+          </div>
 
-          <input
-            type="number"
-            id="transaction-amount"
-            placeholder="Valor"
-            step="0.01"
-            required
-          />
+          <div class="form-field">
+            <label for="transaction-amount">Valor</label>
+            <input
+              type="number"
+              id="transaction-amount"
+              placeholder="R$ 0,00"
+              step="0.01"
+              required
+            />
+          </div>
 
-          <div id="origin-group">
-            <label id="origin-label"> Origem </label>
-
+          <div id="origin-group" class="form-field">
+            <label id="origin-label" for="transaction-origin">Origem</label>
             <select id="transaction-origin"></select>
           </div>
 
@@ -577,16 +591,25 @@
 
         <p id="limit-card-name"></p>
 
-        <input
-          type="number"
-          id="limit-input"
-          placeholder="Limite"
-          step="0.01"
-        />
+        <div class="form-field">
+          <label for="limit-input">Limite</label>
+          <input
+            type="number"
+            id="limit-input"
+            placeholder="R$ 0,00"
+            step="0.01"
+          />
+        </div>
 
-        <button id="save-limit" type="button">Salvar</button>
+        <div class="limit-actions">
+          <button id="cancel-limit" class="btn-secondary" type="button">
+            Cancelar
+          </button>
 
-        <button id="cancel-limit" type="button">Cancelar</button>
+          <button id="save-limit" class="btn-primary" type="button">
+            Salvar
+          </button>
+        </div>
       </div>
     </div>
 
