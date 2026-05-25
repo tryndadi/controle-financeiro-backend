@@ -15,6 +15,10 @@ const MIN_PASSWORD_LENGTH = 8;
 
 const DEFAULT_ALLOWED_ORIGINS = [
   "https://controle-financeiro-backend-wkzj.vercel.app",
+  "https://localhost",
+  "https://127.0.0.1",
+  "http://localhost",
+  "http://127.0.0.1",
   "http://localhost:3000",
   "http://127.0.0.1:3000",
   "capacitor://localhost",
@@ -35,7 +39,7 @@ function getAllowedOrigins() {
 function isAllowedOrigin(origin) {
   if (!origin) return true;
 
-  if (/^http:\/\/(localhost|127\.0\.0\.1):\d+$/.test(origin)) {
+  if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
     return true;
   }
 
