@@ -132,6 +132,15 @@
             required
           />
 
+          <label for="reset-password-confirm">Confirmar nova senha</label>
+          <input
+            id="reset-password-confirm"
+            type="password"
+            minlength="6"
+            autocomplete="new-password"
+            required
+          />
+
           <button class="btn-primary" type="submit">Salvar nova senha</button>
         </form>
 
@@ -440,17 +449,21 @@
           </div>
 
           <form id="profile-form" class="profile-form">
-            <label for="profile-phone">Telefone</label>
-            <input id="profile-phone" type="tel" autocomplete="tel" />
+            <div class="profile-field">
+              <label for="profile-phone">Telefone</label>
+              <input id="profile-phone" type="tel" autocomplete="tel" />
+            </div>
 
-            <label for="profile-cpf">CPF</label>
-            <input
-              id="profile-cpf"
-              type="text"
-              inputmode="numeric"
-              autocomplete="off"
-              maxlength="14"
-            />
+            <div class="profile-field">
+              <label for="profile-cpf">CPF</label>
+              <input
+                id="profile-cpf"
+                type="text"
+                inputmode="numeric"
+                autocomplete="off"
+                maxlength="14"
+              />
+            </div>
 
             <button class="btn-secondary" type="submit">Salvar dados</button>
             <p id="profile-status" class="profile-status" role="status"></p>

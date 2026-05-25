@@ -141,6 +141,11 @@
     white-space: normal;
   }
 
+  .profile-form button {
+    justify-self: stretch;
+    min-width: 0;
+  }
+
   .pro-header {
     flex-direction: column;
     padding: 20px;

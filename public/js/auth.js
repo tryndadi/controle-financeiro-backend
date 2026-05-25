@@ -346,9 +346,16 @@ export function initAuthEvents({ onAuthenticated, onLogout }) {
     setAuthMessage("");
 
     try {
+      const password = getElement("reset-password").value;
+      const passwordConfirm = getElement("reset-password-confirm").value;
+
+      if (password !== passwordConfirm) {
+        throw new Error("As senhas não conferem.");
+      }
+
       await submitJson("/auth/reset-password", {
         token: resetToken,
-        senha: getElement("reset-password").value,
+        senha: password,
       });
 
       window.history.replaceState({}, "", window.location.pathname);
